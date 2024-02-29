@@ -1,0 +1,121 @@
+Dobbiamo partire con la stessa architettura al termine dell'esercitazione
+7-Docker-Networking.
+
+- Apriamo nginx4 e configuriamo server https
+    
+    Il primo passo è creare la directory /etc/nginx/certificate.
+    In questa directory creiamo certificato e chiave del server:
+
+        root@69d4b268b1e8:/etc/nginx/certificate# openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out nginx-certificate.crt -keyout nginx.key
+        ..+..+......+.+........+......+....+..+......+...+....+..+.+...+.........+...+..+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*..+..+.......+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*...............+......+..........................+...+............+...+.+...+..................+..+.+..............+.+.........+........+.......+..+.+..+.+...............+.....+......+...+............+.+...+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        .+.....+......+...+.+........+...+...+......+..........+........+...+.......+...+........+......+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*.............+....+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*...................+...+....+...+...+..............+.......+......+..+.+.........+.....................+...........+......+..................+................+.....+....+...............+..+.........+.........+.....................+...+.+...........+.............+............+..............+.+.....................+..+.......+...+...+............+...+..+.+..+...................+.........+.....+....+.....+.......+.....+...+.+..+....+.....+...+...+.............+..............+............+...+...+..........+..+...............+............+.+.....+...+.+...+...+............+..+.......................................+................+........+.+.....+.+.....+...+......................+...+..+.............+...+.....+.........+...+...+....+...+........+...+......+...+......................+......+........+.......+...+.....................+...+.......................+.........+...+......+.........+.+..+...+....+...+..+.......+..................+..+...................+......+......+.........+........+.......+.........+.........+.....+.......+...+...+.....+...........................+.......+...+...+........+....+.........................................+..........+............+..............+....+.....+.........+..........+............+......+........+.+...+...............+..+....+.....+....+..+.+.....+....+...+......+....................+......+.........+.+...........+..........+..+..................+..........+..+.+......+...+............+......+...+.........+...+........+......+....+..+.......+..+.............+......+.........+......+..............+...+....+...+...+..+............+...+.....................+.+...+.....+...+..........+...+..............+.+......+...+..+....+.................+.......+......+......+...........+....+........+.............+........+..........+...........+...+.+.........+...............+......+.....................+.....+.+........+..........+.........+...............+.....+...+...+............+....+.......................+.+.....+.+.....+...+............+................+..+............+...+..................+....+...+.....+................+.....+.+...........+.........+.+............+...+..+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        -----
+        You are about to be asked to enter information that will be incorporated
+        into your certificate request.
+        What you are about to enter is what is called a Distinguished Name or a DN.
+        There are quite a few fields but you can leave some blank
+        For some fields there will be a default value,
+        If you enter '.', the field will be left blank.
+        -----
+        Country Name (2 letter code) [AU]:IT
+        State or Province Name (full name) [Some-State]:Parma
+        Locality Name (eg, city) []:
+        Organization Name (eg, company) [Internet Widgits Pty Ltd]:UNIPR
+        Organizational Unit Name (eg, section) []:Reti
+        Common Name (e.g. server FQDN or YOUR name) []:192.168.0.4
+        Email Address []:
+
+    Adesso bisogna modificare il file /etc/nginx/sites-available/default in questo modo:
+
+        server {
+                listen 443 ssl default_server;
+                listen [::]:443 ssl default_server;
+
+            ssl_protocols TLSv1.2 TLSv1.3;
+                ssl_certificate /etc/nginx/certificate/nginx-certificate.crt;
+                ssl_certificate_key /etc/nginx/certificate/nginx.key;
+                root /usr/share/nginx/html/secure/;
+                index index.html;
+                server_name _;
+                location / {
+                        try_files $uri $uri/ =404;
+                }
+        }
+
+    Adesso abbiamo creato il Virtual Host nginx per il servizio https.
+    L'ultimo passo è creare la directory /usr/share/nginx/html/secure così
+    è necessaria autenticazione.
+    Non resta altro che riavviare nginx e quindi dovremmo riavviare anche il 
+    container nginx4.
+
+- Apriamo nginx2 ed usiamolo come client HTTPS 
+
+    se eseguo questo comando mi compare questo errore:
+
+        root@73e42fbf7845:/# wget --no-check-certificate  https://192.168.0.4/prova.html
+        --2023-06-25 18:05:08--  https://192.168.0.4/prova.html
+        Connecting to 192.168.0.4:443... connected.
+        WARNING: The certificate of '192.168.0.4' is not trusted.
+        WARNING: The certificate of '192.168.0.4' doesn't have a known issuer.
+        The certificate's owner does not match hostname '192.168.0.4'
+        HTTP request sent, awaiting response... 404 Not Found
+        2023-06-25 18:05:08 ERROR 404: Not Found.
+
+    Se invece eseguo questo comando allora è possibile vedere il certificato del server
+    con le informazioni inserite prima quando abbiamo configurato il server:
+
+        root@73e42fbf7845:/# openssl s_client -connect 192.168.0.4:443
+        CONNECTED(00000003)
+        Can't use SSL_get_servername
+        depth=0 C = IT, ST = Parma, O = UNIPR, OU = Reti, CN = 192.168.0.4
+        verify error:num=18:self-signed certificate
+        verify return:1
+        depth=0 C = IT, ST = Parma, O = UNIPR, OU = Reti, CN = 192.168.0.4
+        verify return:1
+        ---
+        Certificate chain
+        0 s:C = IT, ST = Parma, O = UNIPR, OU = Reti, CN = 192.168.0.4
+        i:C = IT, ST = Parma, O = UNIPR, OU = Reti, CN = 192.168.0.4
+        a:PKEY: rsaEncryption, 4096 (bit); sigalg: RSA-SHA256
+        v:NotBefore: Jun 25 17:55:28 2023 GMT; NotAfter: Jun 24 17:55:28 2024 GMT
+        ---
+        Server certificate
+        -----BEGIN CERTIFICATE-----
+        MIIFhTCCA22gAwIBAgIUdQhtJszw86+u9q4+5jUxUa4nRIYwDQYJKoZIhvcNAQEL
+        BQAwUjELMAkGA1UEBhMCSVQxDjAMBgNVBAgMBVBhcm1hMQ4wDAYDVQQKDAVVTklQ
+        UjENMAsGA1UECwwEUmV0aTEUMBIGA1UEAwwLMTkyLjE2OC4wLjQwHhcNMjMwNjI1
+        MTc1NTI4WhcNMjQwNjI0MTc1NTI4WjBSMQswCQYDVQQGEwJJVDEOMAwGA1UECAwF
+        UGFybWExDjAMBgNVBAoMBVVOSVBSMQ0wCwYDVQQLDARSZXRpMRQwEgYDVQQDDAsx
+        OTIuMTY4LjAuNDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAP0ODFSG
+        ns9DZaDVuUMnptWFeCyHnhJybEwa9AVUOEBgyCaEhrLV7hsBwMXlZnx7fXzb7xQ2
+        tCVVitrmemToA7kSYF9EPivSr/72GQf3kaip33PGe2gzIzwdTNnWDcV7fmayEZ1l
+        Ud0RcQcXGUtlx2g7Qsu8mAi8AfBjG60yAQIdbtH8I4TXGVZ6L2B7siBpIjAjC0hX
+        VyOlX2Rxz+3qgClAclniruoIyOAtiFagsPYodkUPM45mBBpb1TuiKAVuZpEHuJ2W
+        +rJIv9A09Nkz1wEj5LbtNijrIdbdlznB1S85p9c74EACcwCSu0whkkRR+ihYeuLT
+        WN6ZzNOZdt86yClZHCuXXzS7rnJMa5iVuqN1vkvL2Uy9XCcddmo9IUrbzCSe5PQi
+        3Pc7k/OSnVmxCrMCuBOC7A4/fd9mr7JVeloUtrw7wG37AR9/VsOBsNs2hOfNyA06
+        Gnpt4r2FFhO7vBikPd5izfPr+0MJa1ExnosDC63S46UdiUq8l6IcfAr+VUOuX5PA
+        +ubZgAaDlhCCaLG+m2Syc9imJsXka+Ca4Txs+Lahs+6OhwP6qh0nrxrWAvaIisrL
+        fePn8NfoL5n1YzJsXh2x3VGJjJ0cfqR0my+KVEaFCDBNd5f8yVA6xrSWnO/GXo28
+        r/pNBBOo2l89hO4O6IwpgPTiCriasgfH4EwLAgMBAAGjUzBRMB0GA1UdDgQWBBSO
+        f9sEkzdVbnUkGkiJT5hbyuQCMTAfBgNVHSMEGDAWgBSOf9sEkzdVbnUkGkiJT5hb
+        yuQCMTAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4ICAQAfsFpWtOan
+        9PeJ8zBCtctmPuERXvdYkShHh38uXUHDCsEn1hq6bOIUvsNJiXYYJNSzjq+YiQYG
+        Iaa1hu7c3MV75MNVhm6XL7MR64PC8ZFLA79YZ5QOJ428FrfXR1XEdC8QmF9EMnuA
+        6fS9YnMV5yI9LuyoqTt80TeT0wHtlUQout9qxr215hWJIiU+9dzPHhGs9rmcLSJN
+        hCR05AG4G7+HwQKEWbRcxD0589jBkuU4lP0l4YNGMfcWjM1R0EMy4rdVibjER/UI
+        gb03gW1nCCC25GlcndfuiLEcqp4mDbJfaISy3btn1cXInSPOSwKBHRSa/dAtE5Zn
+        V0LAurpmsD7PSNd4rJQlBKMz7h3wzQffpyHqJufdAwOco9Ubx9t8RXmrU0fGWmQi
+        C1FW2hS8ug9GpVJwONavHDe6z4xUWkabCPiYC8P8bCJYqzrrj1NEI+F5Cuh796al
+        Uf3vsX7j5yHOVtTyW2L1FieJ0hQ3vEvk4e3JbAR1w/PHWzDS+bV7q7AokiOoyEtH
+        ntRN2h6JzsowKOSueXO/IsyOm6Z5UTamEpTB5z3dXRBCEh+2EjOBWj3K+M2s1hM9
+        /AXQ1dhKSxFJOrusz/hcHHMmSKILzaWvElx6rJYxJKV7Miu9A/gOvRGI1Q5h+NFH
+        jnMu7acLP63RBxoYaE8Y63tdahx7dj7eTQ==
+        -----END CERTIFICATE-----
+        subject=C = IT, ST = Parma, O = UNIPR, OU = Reti, CN = 192.168.0.4
+        issuer=C = IT, ST = Parma, O = UNIPR, OU = Reti, CN = 192.168.0.4
+        ---
+        SSL-Session:
+        Protocol  : TLSv1.3
+        Cipher    : TLS_AES_256_GCM_SHA384
+        Session-ID: 2DF6C9DC26E9E33E3A4C2494EEAA5344882B64BC83D5802C1DD632809AAD7E15

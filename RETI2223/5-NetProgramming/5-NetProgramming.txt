@@ -1,0 +1,156 @@
+La porta di ascolto che il server utilizzerà sarà : 10000 + 84 = 10084.
+
+1) Programmazione Socket
+
+I due programmi:
+
+	- gethostbyaddr.py : trova il nome partendo dall'indirizzo
+			
+		Comando : python3 gethostbyaddr.py 108.138.189.61
+		Output : ('server-108-138-189-61.mxp64.r.cloudfront.net', [], ['108.138.189.61'])
+			restituisce un'errore dato che controlla prima il file /etc/host prima di fare la query DNS
+		
+	- gethostbyname.py : trova l'indirizzo partendo dal nome
+	
+		Comando : python3 gethostbyname.py www.unipr.it
+		Output : 108.138.189.61
+
+2) Programmazione UDP 
+
+	- DGRAM: con dgram_server.py ci mettiamo in ascolto sulla porta: 10084, con dgram_client.py mandiamo un breve messaggio al server sulla 
+	       porta 10084.
+
+	Apro due terminali, uno per il server ed uno per il client.
+	Server: 
+		$python2 dgram_server.py
+   		port: 10084   server: 127.0.0.1 bufsize: 1024
+		addr: ('127.0.0.1', 48021)  data: hello from Alessandro Domenico Salvatore, in python
+		
+	Client:
+		$python2 dgram_client.py
+		('OPTIONS  server:', '127.0.0.1', ' - port:', 10084, ' - bufsize:', 100)
+		('sent ', 51, ' Bytes \n')
+		('tempo :', 0.0006151199340820312)
+
+		
+	- ECHO: il client aspetta il messaggio del server prima di terminare.
+
+	Client:
+		$python2 echo_client.py
+		OPTIONS  server: 127.0.0.1  - port: 10084  - message: hello from Alessandro Domenico Salvatore, in python
+		to:  ('127.0.0.1', 10084)   - data:  hello from Alessandro Domenico Salvatore, in python
+		from: ('127.0.0.1', 10084) - data: hello from Alessandro Domenico Salvatore, in python
+		tempo : 0.000622034072876
+
+	Server:
+		$python2 echo_server.py
+   		port: 10084   server: 127.0.0.1 bufsize: 1024
+		from: ('127.0.0.1', 35529)  data: hello from Alessandro Domenico Salvatore, in python
+		to: ('127.0.0.1', 35529)   data: hello from Alessandro Domenico Salvatore, in python
+		----------------------------
+		Chiudi socket ed esci..
+
+- Programmazione TCP:
+
+	- EchoTCP
+	In questo caso faremo partire il server in ascolto sulla nostra porta, poi farò mandare al primo client un messaggio di default, poi
+	con il secondo client manderò un messaggio passato come Input.
+
+	Server:
+	$python2 echotcp-server.py
+	OPTIONS  server: 127.0.0.1  - port: 10084
+	starting up on 127.0.0.1 port 10084
+	in attesa di una connessione
+	connesso a  ('127.0.0.1', 56386)
+	ricevuto "hello from Salvatore, in python
+	"
+	inviato "hello from Salvatore, in python
+	"
+	connesso a  ('127.0.0.1', 52566)
+	ricevuto "secondo messaggio
+	"
+	inviato "secondo messaggio
+	"
+	Traceback (most recent call last):
+  	File "echotcp-server.py", line 40, in <module>
+    	s2, c_addr = sock.accept()
+  	File "/usr/lib/python2.7/socket.py", line 206, in accept
+    	sock, addr = self._sock.accept()
+	KeyboardInterrupt
+	
+	Client1:
+	$python2 echotcp-client.py
+	OPTIONS  server: 127.0.0.1  - port: 10084  - message: hello from Salvatore, in python
+	Connesso al server!
+	Risposta del server: hello from Salvatore, in python
+
+	Client2:
+	$python2 echotcp-client.py -m "secondo messaggio"
+	OPTIONS  server: 127.0.0.1  - port: 10084  - message: secondo messaggio
+	Connesso al server!
+	Risposta del server: secondo messaggio
+
+
+	-EchoTCP2
+		
+		Server:
+		$python2 echotcp2-server.py
+		OPTIONS  server: 127.0.0.1  - port: 10084
+		starting up on 127.0.0.1 port 10084
+		in attesa di una connessione
+
+		Client1:
+		$python2 echotcp2-client.py
+		OPTIONS  server: 127.0.0.1  - port: 10084  - message: hello from Salvatore, in python
+		Connesso al server!
+		message (q to quit) > hello1
+		Risposta del server: hello1
+
+		message (q to quit) > esco1
+		Risposta del server: esco1
+
+		message (q to quit) > q
+		
+		Server:
+		connesso a  ('127.0.0.1', 33506)hotcp2-server.py
+		ricevuti "hello1
+		"
+		invio indietro il messaggio
+		ricevuti "esco1
+		"
+		invio indietro il messaggio
+		ricevuti ""
+		no more data from ('127.0.0.1', 33506)
+		
+		Client2:
+		$python2 echotcp2-client.py -m "seconda connessione"
+		OPTIONS  server: 127.0.0.1  - port: 10084  - message: seconda connessione
+		Connesso al server!
+		message (q to quit) > hello2
+		Risposta del server: hello2
+
+		message (q to quit) > esco2
+		Risposta del server: esco2
+
+		message (q to quit) > q
+	
+		
+		Server:
+		connesso a  ('127.0.0.1', 59956)
+		ricevuti "hello2
+		"
+		invio indietro il messaggio
+		ricevuti "esco2
+		"
+		invio indietro il messaggio
+		ricevuti ""
+		no more data from ('127.0.0.1', 59956)
+
+		
+
+		
+	
+
+
+
+	

@@ -1,0 +1,17 @@
+In questo laboratorio ho eseguito i benchmark IMB di Intel per guardare le performance in un cluster HPC.
+
+Per analizzare le performance della comunicazione tra due processi:
+
+	- sullo stesso nodo, comunicazione shared memory, ho eseguito IMB-MPI1-n1.slurm e quindi ho ottenuto
+	  i risulati su IMB-MPI1-n1.shm.dat.
+	
+	- su nodi diversi: ho eseguito IMB-MPI1-n2.slurm per entrambe le reti.
+		- connessi tramite rete Omnipath: ho salvato i risultati in IMB-MPI1.omp.dat
+		- connessi tramite rete Infiniband : risultati in IMB-MPI1.ib.dat
+
+Dopo aver ottenuto i file .dat allora ho potuto creare i grafici per il confronto della banda(Confronto_Banda.png) e per 
+il confronto delle latenze(Confronto_Latenza.png).
+
+La seconda parte del laboratorio prevede di eseguire il benchmark dello storage quindi eseguiamo IMB-IO.slurm prima nell'area
+SCRATCH e salviamo i risultati in lettura e scrittura ottenuti, dopo lo eseguiamo in HOME sempre salvando i risultati.
+Con il file Confronto_Home_Scratch.py generiamo il grafico Confronto_Home_Scratch.png.

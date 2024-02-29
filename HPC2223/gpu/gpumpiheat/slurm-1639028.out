@@ -1,0 +1,13 @@
+#SLURM_JOB_NODELIST   : wn42
+#CUDA_VISIBLE_DEVICES : 0,1
+rank 1 -> colore 0
+Elenco ordinato rank -> host
+visione rank 0 -> host 0 wn42
+visione rank 0 -> host 1 wn42
+rank 0 -> colore 0
+Sono host wn42, rank 0: vedo 2 GPU, rank nel nodo 0
+Sono host wn42, rank 1: vedo 2 GPU, rank nel nodo 1
+Host: wn42 Rank=1 RankNode=1 Device= 1 (Tesla P100-PCIE-12GB)  ECC=Enabled   Free = 12523470848, Total = 12790988800
+Host: wn42 Rank=0 RankNode=0 Device= 0 (Tesla P100-PCIE-12GB)  ECC=Enabled   Free = 12523470848, Total = 12790988800
+Rank 0: average MPI communication time: 0.003199 mS
+Rank 1: average MPI communication time: 0.003764 mS

@@ -1,0 +1,117 @@
+- TELNET
+	Telnet permette di inviare comandi testuali aprendo una connessione TCP e quindi utilizzando il protocollo HTTP.
+	Avvio del client che prende i comandi HTTP che vogliamo eseguire:
+		
+		root@salvatale-server:/var/www/html# telnet localhost 80
+		Trying 127.0.0.1...
+		Connected to localhost.
+		Escape character is '^]'.
+
+	COMANDO: 
+	
+		GET /index.html HTTP/1.0
+
+		HTTP/1.1 200 OK
+		Server: nginx/1.18.0 (Ubuntu)
+		Date: Sat, 24 Jun 2023 11:38:22 GMT
+		Content-Type: text/html
+		Content-Length: 23
+		Last-Modified: Sat, 24 Jun 2023 11:37:35 GMT
+		Connection: close
+		ETag: "6496d57f-17"
+		Accept-Ranges: bytes
+
+	Sto richiedendo tramite il protocollo HTTP informazioni sul file /var/www/html/index.html che il server nginx detiene.
+
+	Posso applicare lo stesso procedimento per richiedere un altro documento:
+	
+		root@salvatale-server:~# telnet localhost 80
+		Trying 127.0.0.1...
+		Connected to localhost.
+		Escape character is '^]'.
+		GET /secure/index.html HTTP/1.0
+
+		HTTP/1.1 200 OK
+		Server: nginx/1.18.0 (Ubuntu)
+		Date: Sat, 24 Jun 2023 12:19:41 GMT
+		Content-Type: text/html
+		Content-Length: 59
+		Last-Modified: Fri, 23 Jun 2023 19:51:58 GMT
+		Connection: close
+		ETag: "6495f7de-3b"
+		Accept-Ranges: bytes
+
+		<h1> Questo è il file HTML che serve autenticazione </h1>
+		Connection closed by foreign host.
+
+	Adesso invece chiedo il documento html del mio virtual host:
+
+		root@salvatale-server:~# telnet localhost 81
+		Trying 127.0.0.1...
+		Connected to localhost.
+		Escape character is '^]'.
+		GET /index.html HTTP/1.0
+
+		HTTP/1.1 200 OK
+		Server: nginx/1.18.0 (Ubuntu)
+		Date: Sat, 24 Jun 2023 12:23:44 GMT
+		Content-Type: text/html
+		Content-Length: 67
+		Last-Modified: Fri, 23 Jun 2023 18:14:34 GMT
+		Connection: close
+		ETag: "6495e10a-43"
+		Accept-Ranges: bytes
+
+		</h1> questo è il file html per Virtual Host sulla porta 81 </h1>
+		Connection closed by foreign host.
+
+	Potrei applicare anche un altro metodo che il protocollo HTTP fornisce
+
+		-HEAD : resituisce solo la parte head del messaggio senza il body.
+
+			root@salvatale-server:~# telnet localhost 81
+			Trying 127.0.0.1...
+			Connected to localhost.
+			Escape character is '^]'.
+			HEAD /index.html HTTP/1.0
+
+			HTTP/1.1 200 OK
+			Server: nginx/1.18.0 (Ubuntu)
+			Date: Sat, 24 Jun 2023 12:28:10 GMT
+			Content-Type: text/html
+			Content-Length: 67
+			Last-Modified: Fri, 23 Jun 2023 18:14:34 GMT
+			Connection: close
+			ETag: "6495e10a-43"
+			Accept-Ranges: bytes
+
+			Connection closed by foreign host.
+
+
+
+
+-Client 
+
+	Per realizzare un client ho creato un programma semplice utilizzando la libreria httplib.
+
+	root@salvatale-server:/home/salvatale# cat client.py
+		import httplib
+
+		#apriamo connessione verso il nostro server nginx
+		connection = httplib.HTTPConnection('localhost', 80)
+		#impostiamo il messaggio della richiesta
+		connection.request("GET", "/index.html", "HTTP/1.0")
+		#otteniamo la risposta
+		response = connection.getresponse()
+		#estrapoliamo i dati della risposta
+		data = response.read()
+		print(data)
+
+		#chiusura connessione
+		connection.close()
+
+	root@salvatale-server:/home/salvatale# python2 client.py
+		This is a nginx server
+
+	Ho utilizzato python2 perchè il modulo httplib è stato rinominato http.client con python3.
+	

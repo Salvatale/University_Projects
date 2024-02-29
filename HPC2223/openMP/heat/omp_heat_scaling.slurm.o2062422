@@ -1,0 +1,5 @@
+#SLURM_JOB_NODELIST: wn21
+Traceback (most recent call last):
+  File "omp_heat_scaling_plot.py", line 1, in <module>
+    import matplotlib
+ImportError: No module named matplotlib

@@ -1,0 +1,4 @@
+#SLURM_JOB_NODELIST   : wn42
+#CUDA_VISIBLE_DEVICES : 0
+# NX=512, NY=512, MAX_ITER=100000 
+# TIME=3.520  #Kernel1_Total_Time=0.863 #Kernel2_Total_Time=0.792

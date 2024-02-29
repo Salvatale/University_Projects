@@ -1,0 +1,4 @@
+#SLURM_JOB_NODELIST   : wn41
+#CUDA_VISIBLE_DEVICES : 0
+rm: cannot remove ‘heat_gpu_scaling16.txt’: No such file or directory
+rm: cannot remove ‘heat_gpu_scaling32.txt’: No such file or directory

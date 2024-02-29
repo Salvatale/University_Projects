@@ -1,0 +1,18 @@
+#!/bin/sh
+ 
+#< 1 node with 2 GPU
+ 
+#SBATCH --partition=gpu
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=1       # processes per node
+#SBATCH --gres=gpu:p100:1        # gpu per node
+#SBATCH --qos=gpu
+#SBATCH --cpus-per-task=1         # CPU cores per MPI process
+#SBATCH --time=0-00:01:00
+#SBATCH --mem=3G
+ 
+module load gnu openmpi cuda
+ 
+echo "#SLURM_JOB_NODELIST   : $SLURM_JOB_NODELIST"
+echo "#CUDA_VISIBLE_DEVICES : $CUDA_VISIBLE_DEVICES"
+mpirun -np 2 ./a.out

@@ -1,0 +1,33 @@
+#SLURM_JOB_NODELIST   : wn45
+#CUDA_VISIBLE_DEVICES : 0
+size A= 2500 X 2500,B= 2500 X 2500
+[Matrix Multiply Using CUDA] - Starting...
+GPU Device 0: "NVIDIA A100 80GB PCIe" with compute capability 8.0
+
+Size: 2496x2496, 2496x2496
+Naive CPU (Golden Reference)
+Processing time: 75309.296875 (ms), GFLOPS: 0.412967 
+GPU SDK Sample
+Processing time: 17.352480 (ms), GFLOPS: 1792.264832 
+Total Errors = 0 
+Naive GPU
+Processing time: 16.714657 (ms), GFLOPS: 1860.656768 
+Total Errors = 0 
+Tiling GPU
+Processing time: 17.011841 (ms), GFLOPS: 1828.152576 
+Total Errors = 0 
+Global mem coalescing GPU
+Processing time: 23.912256 (ms), GFLOPS: 1300.598272 
+Total Errors = 0 
+Remove shared mem bank conflict GPU
+Processing time: 12.926976 (ms), GFLOPS: 2405.840384 
+Total Errors = 0 
+Threads perform computation optimization GPU
+Processing time: 8.751072 (ms), GFLOPS: 3553.877760 
+Total Errors = 0 
+Loop unrolling GPU
+Processing time: 8.622048 (ms), GFLOPS: 3607.059200 
+Total Errors = 0 
+Prefetching GPU
+Processing time: 8.622720 (ms), GFLOPS: 3606.778368 
+Total Errors = 0 

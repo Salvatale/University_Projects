@@ -1,0 +1,39 @@
+#SLURM_JOB_NODELIST   : wn45
+#CUDA_VISIBLE_DEVICES : 0
+cp: omitting directory ‘/hpc/share/tools/cuda/11.5.2/samples/5_Simulations/nbody/doc’
+>>> GCC Version is greater or equal to 5.1.0 <<<
+/hpc/share/tools/cuda/11.5.2/bin/nvcc -ccbin g++ -I/hpc/share/tools/cuda/11.5.2/samples/common/inc  -m64    -ftz=true --threads 0 --std=c++11 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_60,code=sm_60 -gencode arch=compute_61,code=sm_61 -gencode arch=compute_70,code=sm_70 -gencode arch=compute_75,code=sm_75 -gencode arch=compute_80,code=sm_80 -gencode arch=compute_86,code=sm_86 -gencode arch=compute_86,code=compute_86 -o bodysystemcuda.o -c bodysystemcuda.cu
+nvcc warning : The 'compute_35', 'compute_37', 'compute_50', 'sm_35', 'sm_37' and 'sm_50' architectures are deprecated, and may be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+sh: line 1:  5956 Bus error               ptxas -arch=sm_86 -m64 "/tmp/tmpxft_000016d7_00000000-6_bodysystemcuda.compute_86.ptx" -o "/tmp/tmpxft_000016d7_00000000-35_bodysystemcuda.compute_86.sm_86.cubin" > /tmp/tmpxft_000016d7_00000000-37_2ab3220_stdout 2> /tmp/tmpxft_000016d7_00000000-37_2ab3220_stderr
+sh: line 1:  5948 Bus error               cicc --c++11 --gnu_version=50400 --display_error_number --orig_src_file_name "bodysystemcuda.cu" --orig_src_path_name "/hpc/home/alessandrodomenico.salvatore/HPC2223/perf/CUDA/nbody/bodysystemcuda.cu" --allow_managed -arch compute_61 -m64 --no-version-ident -ftz=1 -prec_div=1 -prec_sqrt=1 -fmad=1 --include_file_name "tmpxft_000016d7_00000000-3_bodysystemcuda.fatbin.c" -tused --module_id_file_name "/tmp/tmpxft_000016d7_00000000-4_bodysystemcuda.module_id" --gen_c_file_name "/tmp/tmpxft_000016d7_00000000-10_bodysystemcuda.compute_61.cudafe1.c" --stub_file_name "/tmp/tmpxft_000016d7_00000000-10_bodysystemcuda.compute_61.cudafe1.stub.c" --gen_device_file_name "/tmp/tmpxft_000016d7_00000000-10_bodysystemcuda.compute_61.cudafe1.gpu" "/tmp/tmpxft_000016d7_00000000-27_bodysystemcuda.compute_61.cpp1.ii" -o "/tmp/tmpxft_000016d7_00000000-10_bodysystemcuda.compute_61.ptx" > /tmp/tmpxft_000016d7_00000000-37_2aaf380_stdout 2> /tmp/tmpxft_000016d7_00000000-37_2aaf380_stderr
+sh: line 1:  5950 Bus error               cicc --c++11 --gnu_version=50400 --display_error_number --orig_src_file_name "bodysystemcuda.cu" --orig_src_path_name "/hpc/home/alessandrodomenico.salvatore/HPC2223/perf/CUDA/nbody/bodysystemcuda.cu" --allow_managed -arch compute_80 -m64 --no-version-ident -ftz=1 -prec_div=1 -prec_sqrt=1 -fmad=1 --include_file_name "tmpxft_000016d7_00000000-3_bodysystemcuda.fatbin.c" -tused --module_id_file_name "/tmp/tmpxft_000016d7_00000000-4_bodysystemcuda.module_id" --gen_c_file_name "/tmp/tmpxft_000016d7_00000000-7_bodysystemcuda.compute_80.cudafe1.c" --stub_file_name "/tmp/tmpxft_000016d7_00000000-7_bodysystemcuda.compute_80.cudafe1.stub.c" --gen_device_file_name "/tmp/tmpxft_000016d7_00000000-7_bodysystemcuda.compute_80.cudafe1.gpu" "/tmp/tmpxft_000016d7_00000000-33_bodysystemcuda.compute_80.cpp1.ii" -o "/tmp/tmpxft_000016d7_00000000-7_bodysystemcuda.compute_80.ptx" > /tmp/tmpxft_000016d7_00000000-37_2ab2b80_stdout 2> /tmp/tmpxft_000016d7_00000000-37_2ab2b80_stderr
+sh: line 1:  5957 Bus error               cicc --c++11 --gnu_version=50400 --display_error_number --orig_src_file_name "bodysystemcuda.cu" --orig_src_path_name "/hpc/home/alessandrodomenico.salvatore/HPC2223/perf/CUDA/nbody/bodysystemcuda.cu" --allow_managed -arch compute_75 -m64 --no-version-ident -ftz=1 -prec_div=1 -prec_sqrt=1 -fmad=1 --include_file_name "tmpxft_000016d7_00000000-3_bodysystemcuda.fatbin.c" -tused --module_id_file_name "/tmp/tmpxft_000016d7_00000000-4_bodysystemcuda.module_id" --gen_c_file_name "/tmp/tmpxft_000016d7_00000000-8_bodysystemcuda.compute_75.cudafe1.c" --stub_file_name "/tmp/tmpxft_000016d7_00000000-8_bodysystemcuda.compute_75.cudafe1.stub.c" --gen_device_file_name "/tmp/tmpxft_000016d7_00000000-8_bodysystemcuda.compute_75.cudafe1.gpu" "/tmp/tmpxft_000016d7_00000000-31_bodysystemcuda.compute_75.cpp1.ii" -o "/tmp/tmpxft_000016d7_00000000-8_bodysystemcuda.compute_75.ptx" > /tmp/tmpxft_000016d7_00000000-37_2ab1900_stdout 2> /tmp/tmpxft_000016d7_00000000-37_2ab1900_stderr
+sh: line 1:  5954 Killed                  cicc --c++11 --gnu_version=50400 --display_error_number --orig_src_file_name "bodysystemcuda.cu" --orig_src_path_name "/hpc/home/alessandrodomenico.salvatore/HPC2223/perf/CUDA/nbody/bodysystemcuda.cu" --allow_managed -arch compute_50 -m64 --no-version-ident -ftz=1 -prec_div=1 -prec_sqrt=1 -fmad=1 --include_file_name "tmpxft_000016d7_00000000-3_bodysystemcuda.fatbin.c" -tused --module_id_file_name "/tmp/tmpxft_000016d7_00000000-4_bodysystemcuda.module_id" --gen_c_file_name "/tmp/tmpxft_000016d7_00000000-13_bodysystemcuda.compute_50.cudafe1.c" --stub_file_name "/tmp/tmpxft_000016d7_00000000-13_bodysystemcuda.compute_50.cudafe1.stub.c" --gen_device_file_name "/tmp/tmpxft_000016d7_00000000-13_bodysystemcuda.compute_50.cudafe1.gpu" "/tmp/tmpxft_000016d7_00000000-21_bodysystemcuda.compute_50.cpp1.ii" -o "/tmp/tmpxft_000016d7_00000000-13_bodysystemcuda.compute_50.ptx" > /tmp/tmpxft_000016d7_00000000-37_2aabc80_stdout 2> /tmp/tmpxft_000016d7_00000000-37_2aabc80_stderr
+make: *** [bodysystemcuda.o] Error 255
+Run "nbody -benchmark [-numbodies=<numBodies>]" to measure performance.
+	-fullscreen       (run n-body simulation in fullscreen mode)
+	-fp64             (use double precision floating point values for simulation)
+	-hostmem          (stores simulation data in host memory)
+	-benchmark        (run benchmark to measure performance) 
+	-numbodies=<N>    (number of bodies (>= 1) to run in simulation) 
+	-device=<d>       (where d=0,1,2.... for the CUDA device to use)
+	-numdevices=<i>   (where i=(number of CUDA devices > 0) to use for simulation)
+	-compare          (compares simulation results running once on the default GPU and once on the CPU)
+	-cpu              (run n-body simulation on the CPU)
+	-tipsy=<file.bin> (load a tipsy model file for simulation)
+
+NOTE: The CUDA Samples are not meant for performance measurements. Results may vary when GPU Boost is enabled.
+
+number of CUDA devices  = 1
+> Windowed mode
+> Simulation data stored in video memory
+> Double precision floating point simulation
+> 1 Devices used for simulation
+GPU Device 0: "Ampere" with compute capability 8.0
+
+> Compute 8.0 CUDA device: [NVIDIA A100 80GB PCIe]
+number of bodies = 1024000
+1024000 bodies, total time for 10 iterations: 42079.648 ms
+= 249.188 billion interactions per second
+= 7475.652 double-precision GFLOP/s at 30 flops per interaction
+slurmstepd: error: Detected 1 oom-kill event(s) in step 2058112.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.

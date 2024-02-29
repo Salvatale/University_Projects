@@ -1,0 +1,18 @@
+Installiamo il seguente package: php-fpm
+Comando: sudo apt install php-fpm
+
+Ho modificato il file /etc/nginx/sites-available/default con:
+
+	location ~ .php$ {
+		include snippets/fastcgi-php.conf;
+		fastcgi_pass unix:/var/run/php/php-fpm.sock;
+	}
+
+Ho scaricato tutti i file in http://didattica-linux.unipr.it/~roberto.alfieri@unipr.it/matdid/RETI/http/php/ nella directory /var/www/vh1 con wget.
+
+Ho testato l'effettivo funzionamento:
+
+	root@salvatale-server:/home/salvatale# curl http://localhost:81/chunked.php.1
+	abcdefghijklmnopqrstuvwxyz1234567890abcdefroot
+
+Ho testato anche con il browser dell'host inoltrando sulla porta 8080 dell'host quella 81 del guest.

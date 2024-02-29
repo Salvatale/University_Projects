@@ -1,0 +1,93 @@
+Il laboratorio richiede di parallelizzare il programma factorize.c con le direttive OpenMP.
+Decido di usare factorize2.c come base di partenza dato che ho notato che si comporta meglio degli altri se parallelizzato.
+Il programma factorize1.c divide il blocco in tanti sottoblocchi quindi l'idea è quella di assegnare ogni blocco ad un thread, una volta finito allora comunica se ha trovato il risultato.
+
+Dopo che tutti i processi hanno finito di elaborare, ho messo la stampa del tempo totale impiegato per la fattorizzazione,
+questo pezzo di codice somma tutti i tempi di ogni blocco:
+	t1 += omp_get_wtime();
+	block_factorize (block_idx);
+	t2 += omp_get_wtime();
+
+Per ottenere il tempo totale, ho messo questa direttiva single in modo che solo uno dei thread stampi il tempo impiegato:
+
+	#pragma omp parallel
+	{
+		#pragma omp single
+			printf("Tempo totale: %f, Numero di threads: %d \n",t2-t1,thr);
+			#pragma omp critical
+			{
+				printf("# Thr:%d / %d \n", omp_get_thread_num(), thr );
+			}
+	}
+
+Per ottenere invece gli altri tempi basterebbe eseguire questo comando:
+
+	time ./omp_factorize
+Ho notato che oltre i 56 bit per il modulo il programma non termina perchè sfora il limite di tempo massimo che imposto nel file omp_factorize.slurm.
+
+Per ottenere il numero di core-hours basterebbe moltiplicare il tempo totale per il numero core ed otteniamo il tempo in secondi,per 
+ottenerlo in ore basterà dividere per 3600.
+
+CORE_HOURS = t_tot*cores/3600
+
+Nella seconda parte del laboratorio è richiesto di modificare il programma factorize per ottenere un programma master slave.
+Inseriamo le direttive section per dividere il codice che deve eseguire il master e quello che devono invece eseguire gli slaves:
+
+	#pragma omp parallel num_threads(2)
+	{
+		#pragma omp sections
+		{
+			#pragma omp section //master
+			{
+				while(response)
+				{
+					omp_set_lock(&master);
+					printf("#MASTER: received request from %d  resp: %d \n", request, --response);
+					omp_unset_lock(&slave);
+					omp_test_lock(&master);
+				}
+				master_stop = 1;
+				printf("response is %d the Master is stopped",response);
+			}
+			#pragma omp section //slaves
+			{	
+				#pragma omp parallel num_threads(thr)
+				{ 
+					int block_num = 0;
+					float x;
+					int t = omp_get_thread_num();
+
+					while(!master_stop)
+					{	
+						printf ("#SLAVE %d: calling request of work.. \n",t);
+						#pragma omp critical
+						block_num = request_new_work(t);
+						block_factorize(block_num);
+					}
+
+					printf("Slave %d has terminated the work\n",t);
+
+				}
+
+				printf("Slave sections is closed\n");
+			}
+					
+		}
+	}
+
+Il master assegna il blocco allo slave e poi si mette in attesa di altre richieste da parte di altri slaves, quando uno degli slaves ha
+trovato la risposta allora lo comunica al master che imposta la variabile master_stop = 1, quando questa variabile risulta true allora
+gli slaves smettono di fare richiesta di altri blocchi da elaborare perchè il risultato è stato già trovato,risulta utile dato che una 
+volta trovata la soluzione non c'è bisogno di elaborare tutti i blocchi, quindi riduce il tempo di tutto il programma, bisogna
+sottolineare però che il thread smette di richiedere solo dopo che la variabile viene impostata ad 1, quindi se arriva prima allora
+comincia con l'elaborazione del blocco.
+
+int request_new_work(int t)
+{
+   request=t;               // slave set the request
+   omp_unset_lock(&master); // request is ready: unlock master
+   if(!master_stop) omp_set_lock(&slave);    // waiting fo answer from master: lock the slave
+   omp_test_lock(&master);  // lock master and return 
+   return (response);
+}
+Questa parte di codice è quella utilizzata dallo slave per richiedere ila lavoro quindi un nuovo blocco al master.

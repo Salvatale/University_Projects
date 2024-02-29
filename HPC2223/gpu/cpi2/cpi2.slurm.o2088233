@@ -1,0 +1,4 @@
+#SLURM_JOB_NODELIST : wn45
+#CUDA_VISIBLE_DEVICES : 0
+/var/spool/slurm/slurmd/job2088233/slurm_script: line 23: syntax error near unexpected token `./a.out'
+/var/spool/slurm/slurmd/job2088233/slurm_script: line 23: `	./a.out $N 2>> cpi2.dat'

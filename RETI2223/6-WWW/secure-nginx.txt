@@ -1,0 +1,29 @@
+Installazione:
+- sudo apt install apache2-utils
+
+Configurazione:
+- root@salvatale-server:/var/www/vh1# htpasswd -c /etc/nginx/.htpasswd ubuntu
+	New password:
+	Re-type new password:
+	Adding password for user ubuntu
+
+- modificare il file /etc/nginx/sites-available/default" :
+	
+	location /secure {
+		try_files $uri $uri/ =404;
+		auth_basic "Secure area";
+		auth_basic_user_file /etc/nginx/.htpasswd;
+        }
+
+Ho creato la directory secure : sudo mkdir -p /var/www/html/secure
+
+root@salvatale-server:~# vim /var/www/html/secure/index.html
+root@salvatale-server:~# service nginx restart
+root@salvatale-server:~# curl http://localhost:80
+<html>
+<head><title>401 Authorization Required</title></head>
+<body>
+<center><h1>401 Authorization Required</h1></center>
+<hr><center>nginx/1.18.0 (Ubuntu)</center>
+</body>
+</html>

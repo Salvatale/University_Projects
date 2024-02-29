@@ -1,0 +1,363 @@
+In questa esercitazione dobbiamo creare ed utilizzare le chiavi crittografiche 
+e dopo utilizzare i Cypher visti nelle slide del corso.
+
+-Creazione della chiave privata e pubblica:
+
+    Creazione della chiave privata:
+
+        root@salvatale-server:~# openssl genrsa -out salvatore_rsa_key.pem 2048
+
+        Guardiamo il contenuto della nostra chiave privata:
+
+            root@salvatale-server:~# openssl rsa -in salvatore_rsa_key.pem -text
+            Private-Key: (2048 bit, 2 primes)
+            modulus:
+                00:a7:5b:10:83:6f:cf:92:59:0d:10:3c:83:0c:74:
+                1d:e2:ff:4f:79:69:ed:d3:2a:35:6a:0f:3d:95:ea:
+                90:45:62:4e:ad:6d:22:e0:ee:e3:f8:41:d7:ad:9f:
+                8d:50:a1:4e:2b:f6:f8:bf:70:7a:9d:68:f2:0f:d0:
+                25:17:a2:6f:e8:21:62:08:b3:4c:6a:5f:6f:24:78:
+                38:c1:d2:2c:d8:ef:39:d1:b9:74:34:aa:db:73:77:
+                5a:b7:b1:b9:9b:f3:61:76:16:a2:f7:28:46:ab:d4:
+                34:1f:c6:89:01:22:23:d4:d4:de:f5:44:21:01:f2:
+                b7:bb:c5:fd:88:16:cc:ae:73:26:a3:63:00:ab:26:
+                e1:8c:88:d9:44:ab:4e:31:96:e3:da:e2:60:9b:af:
+                cf:2c:55:30:5f:a3:1d:da:1d:53:2c:d7:18:da:00:
+                a5:58:16:e6:5c:c4:55:d6:dc:f7:8b:09:b7:d8:83:
+                3e:d0:a2:bf:bc:8c:bd:dc:3d:b3:53:11:de:fb:7a:
+                ed:a4:7f:ce:4f:df:36:86:58:7a:02:97:62:d2:e1:
+                51:a5:ca:34:b7:2b:7d:51:6e:58:32:77:28:9e:17:
+                ee:5a:58:7e:66:37:d7:a0:42:71:d3:de:0e:0b:7e:
+                06:36:f3:44:22:f7:c5:05:f3:12:f9:e4:37:0b:56:
+                f3:c3
+            publicExponent: 65537 (0x10001)
+            privateExponent:
+                00:d1:15:1f:0c:6c:24:68:32:83:f4:ef:a4:ca:14:
+                f2:97:26:b6:f9:23:de:7c:73:14:9d:ec:c1:d9:b5:
+                08:de:fb:c8:4f:e3:34:30:26:44:ff:63:ed:e6:7c:
+                9a:3b:4c:a0:dd:4c:85:ce:a6:e2:89:71:13:a5:03:
+                3b:fe:cb:1c:af:11:05:e9:83:6d:74:cd:70:e2:f4:
+                a5:49:81:20:db:e6:04:81:2b:06:83:70:f2:65:7a:
+                38:06:f2:2e:1c:7d:74:c5:e9:2c:b0:9c:76:59:36:
+                44:93:6e:4c:11:9e:6a:d0:51:22:e6:f4:0c:48:e2:
+                c9:a9:4e:87:f1:53:35:64:bb:6f:f6:b7:aa:3b:be:
+                df:a9:0c:59:65:0f:59:72:9e:4b:b3:e4:72:84:57:
+                e6:83:34:93:f0:70:61:ae:54:44:30:f3:ee:1b:01:
+                ad:85:18:81:b7:61:d9:33:00:fe:e2:9b:02:d6:87:
+                3f:97:83:f4:b5:55:d1:1d:a7:47:61:b9:70:db:72:
+                ec:08:0c:aa:4a:81:67:0a:0b:cb:a0:ba:56:bb:09:
+                e2:a7:29:f5:b0:ab:a4:57:51:8c:03:ce:61:74:ff:
+                1f:7b:12:f0:bd:96:83:e8:24:1b:c2:17:2a:cb:58:
+                dd:2b:08:c7:38:7f:be:97:5c:4f:e4:e0:4f:07:2b:
+                f1
+            prime1:
+                00:e7:63:8d:d1:bb:67:50:91:f3:61:2d:9d:52:fb:
+                91:35:9e:e9:79:18:a7:76:66:85:ad:21:7e:16:dc:
+                4c:cd:5b:8b:03:38:80:59:87:9d:56:5a:cd:a1:47:
+                1e:ef:c7:f6:9b:c4:88:23:ec:0c:65:1a:e5:da:e2:
+                23:64:28:87:6b:ba:90:94:14:d6:8b:46:04:8e:27:
+                6e:cb:3d:10:6a:85:f8:b9:5f:9b:6a:89:b7:51:81:
+                0f:28:3c:67:37:3d:44:7e:83:9e:f8:09:62:93:d4:
+                fc:db:2b:c9:86:b8:30:ba:4d:20:d9:cf:03:1e:fa:
+                88:42:02:7a:66:db:43:73:b3
+            prime2:
+                00:b9:27:f6:90:7e:4b:49:6a:b4:69:31:ce:d1:d9:
+                99:90:18:56:2a:8d:78:df:17:5e:50:91:3d:b7:85:
+                51:08:22:c3:a6:53:82:de:ef:bd:2d:2c:57:5e:da:
+                08:50:27:b6:7a:4e:3f:12:42:4a:ad:29:7d:60:d0:
+                a3:65:f3:2d:13:ab:fe:23:03:e0:bb:c3:25:bd:f2:
+                3b:0e:ae:b2:5a:40:55:5b:d2:9d:d2:f7:30:23:00:
+                07:3b:2a:bd:95:62:ec:da:4f:f6:af:bb:86:c0:a9:
+                cb:c7:90:0a:b7:71:4e:5e:d8:29:2b:8e:d4:cb:0e:
+                ef:5c:d5:e9:73:6a:85:b7:b1
+            exponent1:
+                00:ba:bd:7a:a8:28:21:72:41:c7:f4:c6:96:70:71:
+                3c:b8:d4:9e:42:2f:e6:7e:c4:b0:df:8f:e7:2d:d5:
+                ef:59:d0:a6:79:1b:f1:61:cf:f3:e7:cc:72:a5:d5:
+                3b:1f:72:f7:10:b1:64:d9:f0:d7:f4:04:e8:3a:65:
+                45:00:c1:40:c1:6d:98:df:19:8e:28:6a:82:a4:a3:
+                28:64:77:cc:b6:db:96:67:2c:c4:c6:0f:8c:d6:07:
+                5d:4f:30:a8:70:49:4e:ec:f7:96:a5:41:15:c0:8f:
+                24:de:51:11:5c:5b:6c:5f:fe:7d:23:ab:51:2e:80:
+                2c:d5:71:20:8d:c0:29:48:c7
+            exponent2:
+                59:cb:36:b9:56:76:5e:91:80:12:f0:13:d4:13:8a:
+                74:a6:48:cb:74:36:a5:42:a8:fb:bb:a4:49:a7:3e:
+                e8:0a:2c:06:32:c3:ea:28:2b:ff:87:5c:8b:e4:83:
+                59:94:18:db:f1:ac:86:c7:5d:7d:e2:fc:2a:02:a4:
+                eb:a1:66:3f:ff:0e:4d:9e:e8:d3:46:4d:bc:73:88:
+                0e:93:cc:6d:16:7c:0e:fe:f2:89:48:55:b0:f3:a7:
+                8e:1b:29:3c:14:70:b7:63:46:48:6d:52:69:87:2f:
+                0b:86:20:9c:5c:37:dc:a9:4a:36:14:9b:c0:2a:6b:
+                0d:03:b4:a6:c3:87:3b:d1
+            coefficient:
+                03:5b:a7:f2:e9:4e:91:77:47:3c:62:e7:9e:51:4c:
+                8c:b9:87:1c:c2:7d:d4:80:a3:8e:ca:53:51:fe:5a:
+                12:6a:73:67:e6:cc:62:41:bd:80:ed:b5:0e:7b:08:
+                b0:b4:f1:65:a2:61:37:ae:b2:e3:91:e2:d7:21:0a:
+                d5:ca:a4:cc:a4:fc:90:e8:c2:22:c2:a4:25:d2:a6:
+                55:77:45:2f:85:85:d6:20:88:a4:7c:fa:dd:f7:bf:
+                b8:8b:b9:36:45:0c:6c:ac:49:cc:86:90:d1:cb:94:
+                72:81:0c:18:36:cb:95:b8:7b:d5:f2:c1:64:9e:4e:
+                4b:64:29:5d:89:90:6c:4d
+            writing RSA key
+            -----BEGIN PRIVATE KEY-----
+            MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCnWxCDb8+SWQ0Q
+            PIMMdB3i/095ae3TKjVqDz2V6pBFYk6tbSLg7uP4Qdetn41QoU4r9vi/cHqdaPIP
+            0CUXom/oIWIIs0xqX28keDjB0izY7znRuXQ0qttzd1q3sbmb82F2FqL3KEar1DQf
+            xokBIiPU1N71RCEB8re7xf2IFsyucyajYwCrJuGMiNlEq04xluPa4mCbr88sVTBf
+            ox3aHVMs1xjaAKVYFuZcxFXW3PeLCbfYgz7Qor+8jL3cPbNTEd77eu2kf85P3zaG
+            WHoCl2LS4VGlyjS3K31RblgydyieF+5aWH5mN9egQnHT3g4LfgY280Qi98UF8xL5
+            5DcLVvPDAgMBAAECggEAANEVHwxsJGgyg/TvpMoU8pcmtvkj3nxzFJ3swdm1CN77
+            yE/jNDAmRP9j7eZ8mjtMoN1Mhc6m4olxE6UDO/7LHK8RBemDbXTNcOL0pUmBINvm
+            BIErBoNw8mV6OAbyLhx9dMXpLLCcdlk2RJNuTBGeatBRIub0DEjiyalOh/FTNWS7
+            b/a3qju+36kMWWUPWXKeS7PkcoRX5oM0k/BwYa5URDDz7hsBrYUYgbdh2TMA/uKb
+            AtaHP5eD9LVV0R2nR2G5cNty7AgMqkqBZwoLy6C6VrsJ4qcp9bCrpFdRjAPOYXT/
+            H3sS8L2Wg+gkG8IXKstY3SsIxzh/vpdcT+TgTwcr8QKBgQDnY43Ru2dQkfNhLZ1S
+            +5E1nul5GKd2ZoWtIX4W3EzNW4sDOIBZh51WWs2hRx7vx/abxIgj7AxlGuXa4iNk
+            KIdrupCUFNaLRgSOJ27LPRBqhfi5X5tqibdRgQ8oPGc3PUR+g574CWKT1PzbK8mG
+            uDC6TSDZzwMe+ohCAnpm20NzswKBgQC5J/aQfktJarRpMc7R2ZmQGFYqjXjfF15Q
+            kT23hVEIIsOmU4Le770tLFde2ghQJ7Z6Tj8SQkqtKX1g0KNl8y0Tq/4jA+C7wyW9
+            8jsOrrJaQFVb0p3S9zAjAAc7Kr2VYuzaT/avu4bAqcvHkAq3cU5e2CkrjtTLDu9c
+            1elzaoW3sQKBgQC6vXqoKCFyQcf0xpZwcTy41J5CL+Z+xLDfj+ct1e9Z0KZ5G/Fh
+            z/PnzHKl1TsfcvcQsWTZ8Nf0BOg6ZUUAwUDBbZjfGY4oaoKkoyhkd8y225ZnLMTG
+            D4zWB11PMKhwSU7s95alQRXAjyTeURFcW2xf/n0jq1EugCzVcSCNwClIxwKBgFnL
+            NrlWdl6RgBLwE9QTinSmSMt0NqVCqPu7pEmnPugKLAYyw+ooK/+HXIvkg1mUGNvx
+            rIbHXX3i/CoCpOuhZj//Dk2e6NNGTbxziA6TzG0WfA7+8olIVbDzp44bKTwUcLdj
+            RkhtUmmHLwuGIJxcN9ypSjYUm8Aqaw0DtKbDhzvRAoGAA1un8ulOkXdHPGLnnlFM
+            jLmHHMJ91ICjjspTUf5aEmpzZ+bMYkG9gO21DnsIsLTxZaJhN66y45Hi1yEK1cqk
+            zKT8kOjCIsKkJdKmVXdFL4WF1iCIpHz63fe/uIu5NkUMbKxJzIaQ0cuUcoEMGDbL
+            lbh71fLBZJ5OS2QpXYmQbE0=
+            -----END PRIVATE KEY-----
+
+    Estrazione chiave pubblica da quella privata:
+
+        root@salvatale-server:~# openssl rsa -in salvatore_rsa_key.pem -pubout -out salvatore_rsa_pub.pem
+        writing RSA key
+
+        root@salvatale-server:~# cat salvatore_rsa_pub.pem
+        -----BEGIN PUBLIC KEY-----
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp1sQg2/PklkNEDyDDHQd
+        4v9PeWnt0yo1ag89leqQRWJOrW0i4O7j+EHXrZ+NUKFOK/b4v3B6nWjyD9AlF6Jv
+        6CFiCLNMal9vJHg4wdIs2O850bl0NKrbc3dat7G5m/Nhdhai9yhGq9Q0H8aJASIj
+        1NTe9UQhAfK3u8X9iBbMrnMmo2MAqybhjIjZRKtOMZbj2uJgm6/PLFUwX6Md2h1T
+        LNcY2gClWBbmXMRV1tz3iwm32IM+0KK/vIy93D2zUxHe+3rtpH/OT982hlh6Apdi
+        0uFRpco0tyt9UW5YMnconhfuWlh+ZjfXoEJx094OC34GNvNEIvfFBfMS+eQ3C1bz
+        wwIDAQAB
+        -----END PUBLIC KEY-----
+
+-Creazionde del file di testo contenente il messaggio da cifrare
+
+    Ho creato il file di testo eseguendo questo comando su didattica-linux:
+        
+        UNIPR\a.salvatore2@vdi-lgnlnx-01:~$ du -a html/RETI2223/ > toencrypt.txt
+
+        UNIPR\a.salvatore2@vdi-lgnlnx-01:~$ cat toencrypt.txt
+4       html/RETI2223/5-NetProgramming/gethost/gethostbyname.py
+4       html/RETI2223/5-NetProgramming/gethost/gethostbyaddr.py
+8       html/RETI2223/5-NetProgramming/gethost
+4       html/RETI2223/5-NetProgramming/TCP/echotcp-client.py
+4       html/RETI2223/5-NetProgramming/TCP/echotcp-server.py
+4       html/RETI2223/5-NetProgramming/TCP/echotcp2-client.py
+4       html/RETI2223/5-NetProgramming/TCP/echotcp2-server.py
+16      html/RETI2223/5-NetProgramming/TCP
+4       html/RETI2223/5-NetProgramming/UDP/dgram/dgram_client.py
+4       html/RETI2223/5-NetProgramming/UDP/dgram/dgram_server.py
+8       html/RETI2223/5-NetProgramming/UDP/dgram
+4       html/RETI2223/5-NetProgramming/UDP/echo/echo_client.py
+4       html/RETI2223/5-NetProgramming/UDP/echo/echo_server.py
+8       html/RETI2223/5-NetProgramming/UDP/echo
+16      html/RETI2223/5-NetProgramming/UDP
+8       html/RETI2223/5-NetProgramming/5-NetProgramming.txt
+48      html/RETI2223/5-NetProgramming
+4       html/RETI2223/2-VirtualLinux.txt
+8       html/RETI2223/3-NetTools.txt
+4       html/RETI2223/4-NetSniffing.pcap
+4       html/RETI2223/4-NetSniffing.txt
+8       html/RETI2223/6-WWW/cgi-nginx.txt
+4       html/RETI2223/6-WWW/virtual-host-nginx.txt
+4       html/RETI2223/6-WWW/reverse-proxy-nginx.txt
+4       html/RETI2223/6-WWW/PHP-nginx.txt
+4       html/RETI2223/6-WWW/secure-nginx.txt
+4       html/RETI2223/6-WWW/client.py
+4       html/RETI2223/6-WWW/client-www.txt
+32      html/RETI2223/6-WWW
+20      html/RETI2223/7-DockerNetworking.txt
+12      html/RETI2223/8-Docker-Firewall.txt
+132     html/RETI2223/
+
+    Dopo l'ho scaricato sulla mia macchina virtuale utilizzando scp:
+
+        root@salvatale-server:~# scp alessandrodomenico.salvatore@studenti.unipr.it@didattica-linux.unipr.it:/home/a.salvatore2/toencrypt.txt .
+        (alessandrodomenico.salvatore@studenti.unipr.it@didattica-linux.unipr.it) Password:
+        toencrypt.txt                                                       100% 1387    40.5KB/s   00:00
+
+
+-Cifratura del messaggio con Cypher:
+
+    -BASE64: codifica una sequenza binaria in una sequenza di caratteri ASCII
+
+        root@salvatale-server:~/openssl# openssl base64 -e -in toencrypt.txt -out toencrypt.b64
+
+        root@salvatale-server:~/openssl# cat toencrypt.b64
+        NAlodG1sL1JFVEkyMjIzLzUtTmV0UHJvZ3JhbW1pbmcvZ2V0aG9zdC9nZXRob3N0
+        YnluYW1lLnB5CjQJaHRtbC9SRVRJMjIyMy81LU5ldFByb2dyYW1taW5nL2dldGhv
+        c3QvZ2V0aG9zdGJ5YWRkci5weQo4CWh0bWwvUkVUSTIyMjMvNS1OZXRQcm9ncmFt
+        bWluZy9nZXRob3N0CjQJaHRtbC9SRVRJMjIyMy81LU5ldFByb2dyYW1taW5nL1RD
+        UC9lY2hvdGNwLWNsaWVudC5weQo0CWh0bWwvUkVUSTIyMjMvNS1OZXRQcm9ncmFt
+        bWluZy9UQ1AvZWNob3RjcC1zZXJ2ZXIucHkKNAlodG1sL1JFVEkyMjIzLzUtTmV0
+        UHJvZ3JhbW1pbmcvVENQL2VjaG90Y3AyLWNsaWVudC5weQo0CWh0bWwvUkVUSTIy
+        MjMvNS1OZXRQcm9ncmFtbWluZy9UQ1AvZWNob3RjcDItc2VydmVyLnB5CjE2CWh0
+        bWwvUkVUSTIyMjMvNS1OZXRQcm9ncmFtbWluZy9UQ1AKNAlodG1sL1JFVEkyMjIz
+        LzUtTmV0UHJvZ3JhbW1pbmcvVURQL2RncmFtL2RncmFtX2NsaWVudC5weQo0CWh0
+        bWwvUkVUSTIyMjMvNS1OZXRQcm9ncmFtbWluZy9VRFAvZGdyYW0vZGdyYW1fc2Vy
+        dmVyLnB5CjgJaHRtbC9SRVRJMjIyMy81LU5ldFByb2dyYW1taW5nL1VEUC9kZ3Jh
+        bQo0CWh0bWwvUkVUSTIyMjMvNS1OZXRQcm9ncmFtbWluZy9VRFAvZWNoby9lY2hv
+        X2NsaWVudC5weQo0CWh0bWwvUkVUSTIyMjMvNS1OZXRQcm9ncmFtbWluZy9VRFAv
+        ZWNoby9lY2hvX3NlcnZlci5weQo4CWh0bWwvUkVUSTIyMjMvNS1OZXRQcm9ncmFt
+        bWluZy9VRFAvZWNobwoxNglodG1sL1JFVEkyMjIzLzUtTmV0UHJvZ3JhbW1pbmcv
+        VURQCjgJaHRtbC9SRVRJMjIyMy81LU5ldFByb2dyYW1taW5nLzUtTmV0UHJvZ3Jh
+        bW1pbmcudHh0CjQ4CWh0bWwvUkVUSTIyMjMvNS1OZXRQcm9ncmFtbWluZwo0CWh0
+        bWwvUkVUSTIyMjMvMi1WaXJ0dWFsTGludXgudHh0CjgJaHRtbC9SRVRJMjIyMy8z
+        LU5ldFRvb2xzLnR4dAo0CWh0bWwvUkVUSTIyMjMvNC1OZXRTbmlmZmluZy5wY2Fw
+        CjQJaHRtbC9SRVRJMjIyMy80LU5ldFNuaWZmaW5nLnR4dAo4CWh0bWwvUkVUSTIy
+        MjMvNi1XV1cvY2dpLW5naW54LnR4dAo0CWh0bWwvUkVUSTIyMjMvNi1XV1cvdmly
+        dHVhbC1ob3N0LW5naW54LnR4dAo0CWh0bWwvUkVUSTIyMjMvNi1XV1cvcmV2ZXJz
+        ZS1wcm94eS1uZ2lueC50eHQKNAlodG1sL1JFVEkyMjIzLzYtV1dXL1BIUC1uZ2lu
+        eC50eHQKNAlodG1sL1JFVEkyMjIzLzYtV1dXL3NlY3VyZS1uZ2lueC50eHQKNAlo
+        dG1sL1JFVEkyMjIzLzYtV1dXL2NsaWVudC5weQo0CWh0bWwvUkVUSTIyMjMvNi1X
+        V1cvY2xpZW50LXd3dy50eHQKMzIJaHRtbC9SRVRJMjIyMy82LVdXVwoyMAlodG1s
+        L1JFVEkyMjIzLzctRG9ja2VyTmV0d29ya2luZy50eHQKMTIJaHRtbC9SRVRJMjIy
+        My84LURvY2tlci1GaXJld2FsbC50eHQKMTMyCWh0bWwvUkVUSTIyMjMvCg==
+
+    -AES256: creiamo una chiave da 256 bit su blocchi di 128 bit
+
+        Password di cifratura: salvatore
+
+        root@salvatale-server:~/openssl# openssl enc -e -a -aes256 -in toencrypt.txt -out toencrypt.aes256
+        enter AES-256-CBC encryption password:
+        Verifying - enter AES-256-CBC encryption password:
+        *** WARNING : deprecated key derivation used.
+        Using -iter or -pbkdf2 would be better.
+        
+        root@salvatale-server:~/openssl# cat toencrypt.aes256
+        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
+        /IXfv1PKwVhw5qq44a1wCw==
+
+    -SHA1 : creiamo un Message Digest prendendo come messaggio toencrypt.txt e
+            come funzione hash SHA1.
+
+        root@salvatale-server:~/openssl# openssl dgst -sha1 -out toencrypt.sha1 toencrypt.txt
+
+        root@salvatale-server:~/openssl# cat toencrypt.sha1
+        SHA1(toencrypt.txt)= e4a942ebd68822d43f8f05850af4d7e42e88e02d
+
+    -HMAC
+
+        root@salvatale-server:~/openssl# openssl dgst -sha1 -out toencrypt.hmac -hmac salvatore toencrypt.txt
+
+        root@salvatale-server:~/openssl# cat toencrypt.hmac
+        HMAC-SHA1(toencrypt.txt)= 26330c929168486591cd8ac7948bebd99147e67a
+
+- Adesso utilizziamo algoritmi a chiave pubblica:
+
+    Ho ridotto la dimensione di toencrypt.txt perchè mi dava questo errore:
+
+        Error: The input data looks too long to be a hash
+
+    Eseguiamo l'operazione sign utilizzando la mia chiave privata salvatore_rsa_key.pem
+    creando il file toencrypt.rsa_sign
+
+        root@salvatale-server:~/openssl# openssl rsautl -sign -inkey salvatore_rsa_key.pem -in short_toencrypt.txt -out toencrypt.rsa_sign
+        The command rsautl was deprecated in version 3.0. Use 'pkeyutl' instead.
+        RSA operation error
+        40873C038D7F0000:error:0200006E:rsa routines:RSA_padding_add_PKCS1_type_1:data too large for key size:../crypto/rsa/rsa_pk1.c:35:
+        40873C038D7F0000:error:1C880004:Provider routines:rsa_sign:RSA lib:../providers/implementations/signature/rsa_sig.c:652:
+
+    Utilizzando rsautl mi da questo errore allora ho utilizzato pkeyutl:
+
+        root@salvatale-server:~/openssl# openssl pkeyutl -sign -inkey salvatore_rsa_key.pem -in short_toencrypt.txt -out toencrypt.rsa_sign
+
+        root@salvatale-server:~/openssl# cat toencrypt.rsa_sign
+        g▒
+        ▒H▒Q▒Ҏ}▒▒'▒L#2▒(▒▒▒▒u{%h▒▒▒▒
+        ▒>~▒Ȇ▒]▒▒~▒▒▒!4▒W▒d▒▒<å2K▒frL9▒▒▒▒▒'럑(6)CK;G▒Ylйi▒w▒▒D▒1n▒TgYsVZ▒1$▒?▒!Ts{▒߄▒M▒▒▒0▒F▒]▒6@Z▒▒▒▒
+        B.▒▒_0▒E▒s▒Qo▒5▒e▒▒Vᠴ▒{6▒t▒▒a"a@{▒▒▒_*▒+"89t▒▒▒e
+        \D▒▒y▒▒GL
+        ▒▒▒▒w▒R4▒▒B▒
+                    ▒
+
+        Adesso ho firmato il messaggio con la mia chiave privata, chi possiede la
+        mia chiave pubblica può decifrare/verificare il messaggio:
+
+            root@salvatale-server:~/openssl# openssl rsautl -verify -pubin -inkey salvatore_rsa_pub.pem -in toencrypt.rsa_sign -out verify_toencrypt.txt
+            The command rsautl was deprecated in version 3.0. Use 'pkeyutl' instead.
+            root@salvatale-server:~/openssl# cat verify_toencrypt.txt
+            0       ./short_toencrypt.txt
+            4       ./toencrypt.txt
+            4       .
+
+            Otteniamo file verify_toencrypt.txt che è il messaggio decifrato, quindi
+            il messaggio che avevamo prima di firmarlo con la chiave privata.
+
+    Adesso utilizziamo l'operazione crypt utilizzando chiave pubblica del prof. Alfieri
+    ed ottenendo il file toencrypt.rsa_crypt
+
+        root@salvatale-server:~/openssl# openssl pkeyutl -encrypt -pubin -inkey alfieri_rsa_pub.pem -in short_toencrypt.txt -out toencrypt.rsa_crypt
+
+        root@salvatale-server:~/openssl# cat toencrypt.rsa_crypt
+        b(▒▒▒0▒▒c▒m|m.▒>@(KA▒p▒:F~▒Kz)▒▒s▒▒▒}j
+                                            ▒@▒▒▒}ξ<▒▒▒cNc▒▒▒t▒Ye*7▒L▒tMP▒z▒T▒▒xֹ ▒▒▒▒Z▒3ո▒r▒ךR▒▒▒▒ك▒S*▒{▒M[▒▒
+        \▒▒%▒▒▒▒_e▒▒▒8▒w▒sh▒▒▒▒\▒e8!▒*▒▒=d%▒▒▒▒7▒▒▒R▒   ,٦▒4<
+        D*ꑧ▒i$▒#▒gƇroot@salvatale-server:~/openssl#         2e▒,-▒4eڛA▒▒▒@▒d▒6▒▒▒!▒▒▒▒▒▒R▒▒▒z▒▒\▒▒)
+
+    In questo modo ho cifrato il messaggio con la chiave pubblica del prof. Alfieri 
+    e solo con la sua chiave privata può decifrare questo messaggio.
+
+- Creiamo il message digest firmato con la nostra chiave privata e verifichiamolo
+  con quella pubblica:
+
+    Creazione Message Digest firmato con chiave privata:
+
+        root@salvatale-server:~/openssl# openssl dgst -sha1 -sign salvatore_rsa_key.pem -out toencrypt.sha1_signed toencrypt.txt
+
+        root@salvatale-server:~/openssl# cat toencrypt.sha1_signed                                            g▒▒U▒▒/\▒˖B▒▒M▒?▒▒▒▒▒
+        s]▒m▒y▒x4
+                ▒▒^▒▒▒'[▒v▒▒^▒ ▒`▒S▒G▒B▒▒XD▒Sﻺ=▒
+        ▒X1▒`"▒▒▒$▒▒᯻5▒$▒&▒▒ڄ▒Rk▒▒▒▒▒Mn▒▒▒xۗDL▒"▒▒UJ▒▒8▒t▒▒▒J▒▒v*▒▒
+                                                                ▒▒x▒i▒▒▒l▒.DF▒▒*▒u▒▒▒▒u▒▒76S▒▒▒▒Q% ▒▒▒61▒J%Cfۦq|▒xܾ▒X3_▒▒M▒▒8B▒ʤDC▒2 ▒_▒▒%Cd
+
+    Verifichiamo il nostro Message Digest con la nostra chiave pubblica:
+
+        root@salvatale-server:~/openssl# openssl dgst -sha1 -verify salvatore_rsa_pub.pem -signature toencrypt.sha1_signed toencrypt.txt
+        Verified OK
+
+    Quindi abbiamo verificato che il Message Digest.

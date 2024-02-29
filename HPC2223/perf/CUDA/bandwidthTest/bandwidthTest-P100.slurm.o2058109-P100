@@ -1,0 +1,36 @@
+#SLURM_JOB_NODELIST   : wn41
+#CUDA_VISIBLE_DEVICES : 0
+>>> GCC Version is greater or equal to 5.1.0 <<<
+/hpc/share/tools/cuda/11.5.2/bin/nvcc -ccbin g++ -I/hpc/share/tools/cuda/11.5.2/samples/common/inc  -m64    --threads 0 --std=c++11 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_60,code=sm_60 -gencode arch=compute_61,code=sm_61 -gencode arch=compute_70,code=sm_70 -gencode arch=compute_75,code=sm_75 -gencode arch=compute_80,code=sm_80 -gencode arch=compute_86,code=sm_86 -gencode arch=compute_86,code=compute_86 -o bandwidthTest.o -c bandwidthTest.cu
+nvcc warning : The 'compute_35', 'compute_37', 'compute_50', 'sm_35', 'sm_37' and 'sm_50' architectures are deprecated, and may be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+sh: line 1: 21068 Killed                  cicc --c++11 --gnu_version=50400 --display_error_number --orig_src_file_name "bandwidthTest.cu" --orig_src_path_name "/hpc/home/alessandrodomenico.salvatore/HPC2223/perf/CUDA/bandwidthTest/bandwidthTest.cu" --allow_managed -arch compute_60 -m64 --no-version-ident -ftz=0 -prec_div=1 -prec_sqrt=1 -fmad=1 --include_file_name "tmpxft_000051e7_00000000-3_bandwidthTest.fatbin.c" -tused --module_id_file_name "/tmp/tmpxft_000051e7_00000000-4_bandwidthTest.module_id" --gen_c_file_name "/tmp/tmpxft_000051e7_00000000-11_bandwidthTest.compute_60.cudafe1.c" --stub_file_name "/tmp/tmpxft_000051e7_00000000-11_bandwidthTest.compute_60.cudafe1.stub.c" --gen_device_file_name "/tmp/tmpxft_000051e7_00000000-11_bandwidthTest.compute_60.cudafe1.gpu" "/tmp/tmpxft_000051e7_00000000-25_bandwidthTest.compute_60.cpp1.ii" -o "/tmp/tmpxft_000051e7_00000000-11_bandwidthTest.compute_60.ptx" > /tmp/tmpxft_000051e7_00000000-37_1212b50_stdout 2> /tmp/tmpxft_000051e7_00000000-37_1212b50_stderr
+sh: line 1: 21063 Bus error               ptxas -arch=sm_86 -m64 "/tmp/tmpxft_000051e7_00000000-6_bandwidthTest.compute_86.ptx" -o "/tmp/tmpxft_000051e7_00000000-35_bandwidthTest.compute_86.sm_86.cubin" > /tmp/tmpxft_000051e7_00000000-37_1217ab0_stdout 2> /tmp/tmpxft_000051e7_00000000-37_1217ab0_stderr
+sh: line 1: 21072 Bus error               cicc --c++11 --gnu_version=50400 --display_error_number --orig_src_file_name "bandwidthTest.cu" --orig_src_path_name "/hpc/home/alessandrodomenico.salvatore/HPC2223/perf/CUDA/bandwidthTest/bandwidthTest.cu" --allow_managed -arch compute_80 -m64 --no-version-ident -ftz=0 -prec_div=1 -prec_sqrt=1 -fmad=1 --include_file_name "tmpxft_000051e7_00000000-3_bandwidthTest.fatbin.c" -tused --module_id_file_name "/tmp/tmpxft_000051e7_00000000-4_bandwidthTest.module_id" --gen_c_file_name "/tmp/tmpxft_000051e7_00000000-7_bandwidthTest.compute_80.cudafe1.c" --stub_file_name "/tmp/tmpxft_000051e7_00000000-7_bandwidthTest.compute_80.cudafe1.stub.c" --gen_device_file_name "/tmp/tmpxft_000051e7_00000000-7_bandwidthTest.compute_80.cudafe1.gpu" "/tmp/tmpxft_000051e7_00000000-33_bandwidthTest.compute_80.cpp1.ii" -o "/tmp/tmpxft_000051e7_00000000-7_bandwidthTest.compute_80.ptx" > /tmp/tmpxft_000051e7_00000000-37_1217490_stdout 2> /tmp/tmpxft_000051e7_00000000-37_1217490_stderr
+sh: line 1: 21065 Bus error               cicc --c++11 --gnu_version=50400 --display_error_number --orig_src_file_name "bandwidthTest.cu" --orig_src_path_name "/hpc/home/alessandrodomenico.salvatore/HPC2223/perf/CUDA/bandwidthTest/bandwidthTest.cu" --allow_managed -arch compute_37 -m64 --no-version-ident -ftz=0 -prec_div=1 -prec_sqrt=1 -fmad=1 --include_file_name "tmpxft_000051e7_00000000-3_bandwidthTest.fatbin.c" -tused --module_id_file_name "/tmp/tmpxft_000051e7_00000000-4_bandwidthTest.module_id" --gen_c_file_name "/tmp/tmpxft_000051e7_00000000-14_bandwidthTest.compute_37.cudafe1.c" --stub_file_name "/tmp/tmpxft_000051e7_00000000-14_bandwidthTest.compute_37.cudafe1.stub.c" --gen_device_file_name "/tmp/tmpxft_000051e7_00000000-14_bandwidthTest.compute_37.cudafe1.gpu" "/tmp/tmpxft_000051e7_00000000-19_bandwidthTest.compute_37.cpp1.ii" -o "/tmp/tmpxft_000051e7_00000000-14_bandwidthTest.compute_37.ptx" > /tmp/tmpxft_000051e7_00000000-37_120f4b0_stdout 2> /tmp/tmpxft_000051e7_00000000-37_120f4b0_stderr
+sh: line 1: 21071 Killed                  cicc --c++11 --gnu_version=50400 --display_error_number --orig_src_file_name "bandwidthTest.cu" --orig_src_path_name "/hpc/home/alessandrodomenico.salvatore/HPC2223/perf/CUDA/bandwidthTest/bandwidthTest.cu" --allow_managed -arch compute_75 -m64 --no-version-ident -ftz=0 -prec_div=1 -prec_sqrt=1 -fmad=1 --include_file_name "tmpxft_000051e7_00000000-3_bandwidthTest.fatbin.c" -tused --module_id_file_name "/tmp/tmpxft_000051e7_00000000-4_bandwidthTest.module_id" --gen_c_file_name "/tmp/tmpxft_000051e7_00000000-8_bandwidthTest.compute_75.cudafe1.c" --stub_file_name "/tmp/tmpxft_000051e7_00000000-8_bandwidthTest.compute_75.cudafe1.stub.c" --gen_device_file_name "/tmp/tmpxft_000051e7_00000000-8_bandwidthTest.compute_75.cudafe1.gpu" "/tmp/tmpxft_000051e7_00000000-31_bandwidthTest.compute_75.cpp1.ii" -o "/tmp/tmpxft_000051e7_00000000-8_bandwidthTest.compute_75.ptx" > /tmp/tmpxft_000051e7_00000000-37_1216260_stdout 2> /tmp/tmpxft_000051e7_00000000-37_1216260_stderr
+make: *** [bandwidthTest.o] Error 255
+[CUDA Bandwidth Test] - Starting...
+Running on...
+
+ Device 0: Tesla P100-PCIE-12GB
+ Quick Mode
+
+ Host to Device Bandwidth, 1 Device(s)
+ PINNED Memory Transfers
+   Transfer Size (Bytes)	Bandwidth(GB/s)
+   32000000			11.8
+
+ Device to Host Bandwidth, 1 Device(s)
+ PINNED Memory Transfers
+   Transfer Size (Bytes)	Bandwidth(GB/s)
+   32000000			13.2
+
+ Device to Device Bandwidth, 1 Device(s)
+ PINNED Memory Transfers
+   Transfer Size (Bytes)	Bandwidth(GB/s)
+   32000000			382.1
+
+Result = PASS
+
+NOTE: The CUDA Samples are not meant for performance measurements. Results may vary when GPU Boost is enabled.
+slurmstepd: error: Detected 17 oom-kill event(s) in step 2058109.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.

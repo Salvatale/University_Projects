@@ -1,0 +1,16 @@
+installiamo openssl con: sudo apt install openssl
+
+modifichiamo il file /etc/nginx/sites-available/default in questo modo:
+
+ 	location / {
+                proxy_pass http://localhost:81
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files $uri $uri/ =404;
+        }
+
+Facciamo il restart di nginx: service nginx restart.
+Adesso nginx funge da proxy ed invia le richieste al server passato con proxy_pass.
+
+root@salvatale-server:/home/salvatale# curl http://localhost:80
+</h1> questo è il file html per Virtual Host sulla porta 81 </h1>

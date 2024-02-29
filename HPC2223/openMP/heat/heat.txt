@@ -1,0 +1,10 @@
+Il laboratorio ci chiedeva di parallelizzare il programma heat.c ed in seguito di vedere come si comporta con i tre
+differenti compilatori.
+
+Ho inserito la direttiva #pragma omp parallel for all'inizio del ciclo nella funzione di Jacobi, quindi 
+ogni thread calcolava il calore di ogni colonna della j-esima riga.
+
+Dopo ho creato un file slurm dove compilavo il codice di heat.c con diversi compilatori e
+mi appuntavo sul file .dat i vari tempi all'aumentare dei thread.
+
+I grafici sottolineano come i tempi diminuiscono se aumentiamo il numero di thread.

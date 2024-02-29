@@ -1,0 +1,142 @@
+1) Architettura di rete è di tipo domestico.
+Il computer fisso è collegato tramite cavo all'apparato di rete che è un modem Fastweb.
+
+Per tracciare i NAT attraversati per collegarsi alla rete ho utilizzato il seguente comando sulla macchina virtuale:
+
+$ traceroute www.unipr.it
+traceroute to www.unipr.it (108.138.189.75), 30 hops max, 60 byte packets
+ 1  myfastgate.lan (192.168.1.254)  1.390 ms  0.601 ms  0.483 ms
+ 2  10.5.3.135 (10.5.3.135)  12.279 ms  12.192 ms  12.104 ms
+ 3  10.5.99.174 (10.5.99.174)  12.195 ms  11.914 ms  11.828 ms
+ 4  10.5.9.113 (10.5.9.113)  11.746 ms  11.614 ms  11.532 ms
+ 5  10.254.9.69 (10.254.9.69)  18.162 ms  17.756 ms  15.579 ms
+ 6  62-101-124-98.fastres.net (62.101.124.98)  14.562 ms 62-101-124-94.fastres.net (62.101.124.94)  14.567 ms  14.394 ms
+ 7  62-101-124-5.fastres.net (62.101.124.5)  14.795 ms 62-101-124-1.fastres.net (62.101.124.1)  15.209 ms  15.081 ms
+ 8  52.46.167.132 (52.46.167.132)  17.882 ms  17.765 ms  17.663 ms
+ 9  52.119.153.176 (52.119.153.176)  70.699 ms 52.119.153.210 (52.119.153.210)  17.454 ms 52.119.153.6 (52.119.153.6)  15.483 ms
+10  52.119.153.23 (52.119.153.23)  15.383 ms 52.119.153.21 (52.119.153.21)  24.958 ms 52.119.153.25 (52.119.153.25)  24.815 ms
+11  52.119.154.157 (52.119.154.157)  15.296 ms 52.119.154.155 (52.119.154.155)  16.171 ms 52.119.154.161 (52.119.154.161)  22.870 ms
+12  * * *
+13  * 52.119.155.125 (52.119.155.125)  19.376 ms *
+14  * * *
+15  * * *
+16  * * *
+17  * * *
+18  * * *
+19  * * *
+20  * * *
+21  * * *
+22  * * *
+23  * * *
+24  * * *
+25  * * *
+26  * * *
+27  * * *
+28  * * *
+29  * * *
+30  * * *
+
+Questo è lo schema di tutti i router attraversati fino a destinazione.
+
+Con il comando ifconfig ottengo tutte le informazioni di rete delle
+interfacce internet della mia macchina virtuale:
+
+ifconfig
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:67:a3:6a:8f  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+enp0s3: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.1.55  netmask 255.255.255.0  broadcast 192.168.1.255
+        inet6 2001:b07:6474:723d:1447:eb3b:5dc:b11f  prefixlen 64  scopeid 0x0<global>
+        inet6 fe80::9f06:a01a:e49:3f79  prefixlen 64  scopeid 0x20<link>
+        inet6 2001:b07:6474:723d:c48e:db:4e21:112b  prefixlen 64  scopeid 0x0<global>
+        ether 08:00:27:73:7b:b3  txqueuelen 1000  (Ethernet)
+        RX packets 4721  bytes 503980 (503.9 KB)
+        RX errors 0  dropped 1981  overruns 0  frame 0
+        TX packets 1367  bytes 121361 (121.3 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 601  bytes 58038 (58.0 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 601  bytes 58038 (58.0 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+TABELLA DI ROUTING:
+
+$ route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         myfastgate.lan  0.0.0.0         UG    100    0        0 enp0s3
+link-local      0.0.0.0         255.255.0.0     U     1000   0        0 enp0s3
+172.17.0.0      0.0.0.0         255.255.0.0     U     0      0        0 docker0
+192.168.1.0     0.0.0.0         255.255.255.0   U     100    0        0 enp0s3
+
+TABELLA DI ROUTING PER IPv6:
+
+$ /sbin/route -A inet6
+Kernel IPv6 routing table
+Destination                    Next Hop                   Flag Met Ref  Use If
+ip6-localhost/128              [::]                       U    256 2      0 lo
+2001:b07:6474:723d::/64        [::]                       U    100 1      0 enp0s3
+fe80::/64                      [::]                       U    1024 1      0 enp0s3
+[::]/0                         _gateway                   UG   100 5      0 enp0s3
+ip6-localhost/128              [::]                       Un   0   5      0 lo
+salvatale-VirtualBox/128       [::]                       Un   0   3      0 enp0s3
+salvatale-VirtualBox/128       [::]                       Un   0   3      0 enp0s3
+salvatale-VirtualBox/128       [::]                       Un   0   3      0 enp0s3
+ip6-mcastprefix/8              [::]                       U    256 6      0 enp0s3
+[::]/0                         [::]                       !n   -1  1      0 lo
+
+Nel prossimo passo mi connetto con ssh al server didattica-linux ed eseguo questo comando per ottenere le connessioni tcp attive:
+
+$ netstat -tn
+Connessioni Internet attive (senza server)
+Proto CodaRic CodaInv Indirizzo locale        Indirizzo remoto       Stato
+tcp        0     48 160.78.50.165:22        160.78.143.5:58587      ESTABLISHED
+tcp        0      0 160.78.50.165:988       160.78.50.164:2049      ESTABLISHED
+tcp        0      0 160.78.50.165:58786     160.78.50.180:445       ESTABLISHED
+tcp        0      0 160.78.50.165:45470     160.78.50.180:389       ESTABLISHED
+tcp        0      0 160.78.50.165:22        160.78.143.5:58588      ESTABLISHED
+
+
+
+3) Visualizzo le entry della tabella dei miei neighbour con:
+
+$ arp -a
+? (192.168.1.54) at 64:e7:d8:7b:23:66 [ether] on enp0s3
+? (192.168.1.59) at 30:9c:23:a4:03:7d [ether] on enp0s3
+myfastgate.lan (192.168.1.254) at 8c:dc:02:ca:1a:b4 [ether] on enp0s3
+
+Dopo eseguo il protocollo ARP per visualizzare l'elenco dei miei neighbours:
+
+$ ip neighbour 
+192.168.1.54 dev enp0s3 lladdr 64:e7:d8:7b:23:66 STALE 
+192.168.1.59 dev enp0s3 lladdr 30:9c:23:a4:03:7d STALE 
+192.168.1.254 dev enp0s3 lladdr 8c:dc:02:ca:1a:b4 STALE 
+fe80::8cd8:374f:33ca:1ab4 dev enp0s3 lladdr 8c:dc:02:ca:1a:b4 router STALE
+
+
+4) Dato che il tracciamento verso www.unipr.it l'ho già trovato nel primo punto allora mi resta da trovare solo il throughput:
+
+$ wget https://www.unipr.it/themes/custom/unipr/logo.svg
+--2023-06-22 19:50:36--  https://www.unipr.it/themes/custom/unipr/logo.svg
+Resolving www.unipr.it (www.unipr.it)... 2600:9000:248c:f400:5:5123:dc80:93a1, 2600:9000:248c:c800:5:5123:dc80:93a1, 2600:9000:248c:200:5:5123:dc80:93a1, ...
+Connecting to www.unipr.it (www.unipr.it)|2600:9000:248c:f400:5:5123:dc80:93a1|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 46396 (45K) [image/svg+xml]
+Saving to: ‘logo.svg’
+
+logo.svg              100%[========================>]  45.31K  --.-KB/s    in 0.02s   
+
+2023-06-22 19:50:36 (2.16 MB/s) - ‘logo.svg’ saved [46396/46396]
+
+Throughput = 2.16 MB/s

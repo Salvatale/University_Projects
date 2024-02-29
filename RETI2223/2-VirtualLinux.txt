@@ -1,0 +1,7 @@
+1) Ho installato la distribuzione di Ubuntu 23.04 come macchina virtuale su VirtualBox con le GuestAdditions
+
+2) Ho installato tutti i pacchetti di rete.
+   Ho installa MobaXTerm per utilizzare protocollo ssh per accedere all'account dell'università ed alla mia macchina virtuale.
+
+3) Ho installato docker e fatto la pull di alpine:latest
+

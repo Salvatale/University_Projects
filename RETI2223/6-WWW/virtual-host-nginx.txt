@@ -1,0 +1,22 @@
+Ho modificato il file /etc/nginx/sites-available/default:
+
+    server {
+        listen 81;
+        listen [::]:81;
+
+        server_name vh1;
+
+        root /var/www/vh1;
+        index index.html;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+    }
+
+Per verificare il corretto funzionamento, ho eseguito queste operazioni:
+- root@salvatale-server:/usr/lib/cgi-bin# mkdir /var/www/vh1
+- root@salvatale-server:/usr/lib/cgi-bin# vim /var/www/vh1/index.html
+- root@salvatale-server:/usr/lib/cgi-bin# service nginx restart
+- root@salvatale-server:/usr/lib/cgi-bin# curl http://localhost:81
+    </h1> questo è il file html per Virtual Host sulla porta 81 </h1>

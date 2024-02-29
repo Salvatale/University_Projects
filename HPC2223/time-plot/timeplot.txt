@@ -1,0 +1,29 @@
+Eseguo i comandi per copiare tutto ciò che mi serve per questo laboratorio:
+
+	mkdir -p ~/HPC2223/time-plot
+	cp /hpc/group/T_2022_HPCPROGPAR/time-plot/*  ~/HPC2223/time-plot/
+
+Il primo punto è creare i plot IMB_thr.png, IMB_lat.png, networks_barplot.png.
+Quindi otteniamo tre immagini con dei grafici:
+
+	- IMB_thr.png : permette di visualizzare il throughput, quindi le prestazioni di un componente hardware
+			ottenute da qualche benchmark, questi dati sono letti da IMB.dat.
+	- IMB_lat.png : permette di visualizzare la latenza all'aumentare del numero di bytes, la latenza è il tempo
+			che impiegano i bytes ad arrivare a destinazione più il tempo di segnalazione di ACK da parte
+			del ricevente.
+			Dato importante all'interno della programmazione parallela dato che i nodi sono collegati attraverso la
+			rete e quindi avremo scambio di informazioni tra i vari nodi.
+
+
+	- networks_barplot.png : permette di visualizzare le caratteristiche dei vari tipi di rete: costo,bandwidth,latenza e bitrate,
+				 è un grafico a barre verticali.
+
+Per la seconda parte invece analizziamo i due metodi di integrazione per il calcolo del pi greco, il programma cpi.c permette di calcolare
+il pi greco con due funzioni diverse: f1 ed f2.
+Una volta individuate le due funzioni all'interno del codice non ci resta che eseguire cpi_scaling.slurm:
+	- $ sbatch cpi_scaling.slurm
+Il file slurm itera f1 ed f2 N volte in cpi.c, poi incrementa N ogni passo e scrive tutti i risultati ottenuti nel file cpi_scaling.csv,
+quindi adesso ci basta eseguire il file cpi_scaling.py per ottenere il grafico cpi_scaling.png.
+Il grafico mostra come la funzione f1 si comporti meglio dato che impiega meno tempo computazionale e l'errore resta più basso rispetto
+ad f2.
+

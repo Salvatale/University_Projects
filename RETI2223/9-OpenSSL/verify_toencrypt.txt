@@ -1,0 +1,3 @@
+0	./short_toencrypt.txt
+4	./toencrypt.txt
+4	.

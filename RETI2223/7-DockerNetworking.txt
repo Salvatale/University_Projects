@@ -1,0 +1,335 @@
+-Creazione immagine
+
+    Come primo passo dobbiamo creare un'immagine adeguata su cui lavorare durante l'esercitazione.
+    Quindi avviamo un'istanza di nginx:
+
+        root@salvatale-server:~# docker run -d --name nginx2 nginx:latest
+            26d86407806d7976afb584dd8253088166d2efe965bc43c08467f2e722e19278
+        
+    Una volta creato il container allora installiamo tutti i pacchetti che ci servono ed
+    aggiorniamo.
+
+    Creiamo un utente per poter accedere al container con il protocollo ssh:
+
+        useradd debian -p $(openssl passwd -1 debian) -m
+        echo "ListenAddress 0.0.0.0" >> /etc/ssh/sshd_config
+
+    Facciamo la commit del container per creare l'immagine nginx configurata.
+
+        root@salvatale-server:~# docker commit nginx2 nginx-net:latest
+        sha256:b557381e486745759751500f8a94dc3bfe71a6cb2bd979d6aca87e6836fa0f50
+
+    Creiamo la directory /home/ubuntu/NGINX/prova.html che diventerà la root directory dei 
+    nostri server nginx.
+
+        root@salvatale-server:~# mkdir -p /home/ubuntu/NGINX
+        root@salvatale-server:~# vim /home/ubuntu/NGINX/prova.html
+
+    Avvio i 3 container utilizzando la mia immagine nginx-net, ogni container condivide la
+    directory /home/ubuntu/NGINX montata sull'host d l'host espone la porta 800x sulla porta 80
+    di ogni container:
+
+        root@salvatale-server:~# docker run --privileged -d --name nginx2 -p 8002:80 -v /home/ubuntu/NGINX/:/usr/share/nginx/html nginx-net:latest
+        c2fe5c2edb79457f2ea8e144d6e11f5bfff326e11393cf7ddbecdda19c71230b
+
+        root@salvatale-server:~# docker run --privileged -d --name nginx3 -p 8003:80 -v /home/ubuntu/NGINX/:/usr/share/nginx/html nginx-net:latest
+        392e6c9825ba0895514c9918d96fddfab546c7d7b9aaab5342cee2a8a61a3271
+
+        root@salvatale-server:~# docker run --privileged -d --name nginx4 -p 8004:80 -v /home/ubuntu/NGINX/:/usr/share/nginx/html nginx-net:latest
+        6b6fc14b99b4159671c26ace0702a6cd4d03633843ec7abbaa39e266e7967960
+
+        root@salvatale-server:~# docker ps
+        CONTAINER ID   IMAGE              COMMAND                  CREATED          STATUS          PORTS                                   NAMES
+        6b6fc14b99b4   nginx-net:latest   "/docker-entrypoint.…"   9 seconds ago    Up 7 seconds    0.0.0.0:8004->80/tcp, :::8004->80/tcp   nginx4
+        392e6c9825ba   nginx-net:latest   "/docker-entrypoint.…"   18 seconds ago   Up 17 seconds   0.0.0.0:8003->80/tcp, :::8003->80/tcp   nginx3
+        c2fe5c2edb79   nginx-net:latest   "/docker-entrypoint.…"   34 seconds ago   Up 33 seconds   0.0.0.0:8002->80/tcp, :::8002->80/tcp   nginx2
+
+    Attiviamo il servizio ssh sui 3 container e verifichiamo:
+
+        -root@salvatale-server:~# ssh debian@172.17.0.2
+
+        debian@172.17.0.2's password:
+        Linux c2fe5c2edb79 5.15.0-75-generic #82-Ubuntu SMP Tue Jun 6 23:10:23 UTC 2023 x86_64
+
+        The programs included with the Debian GNU/Linux system are free software;
+        the exact distribution terms for each program are described in the
+        individual files in /usr/share/doc/*/copyright.
+
+        Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+        permitted by applicable law.
+
+        -root@salvatale-server:~# curl http://172.17.0.2/prova.html
+        <h1> Documento di prova </h1>
+
+        -root@salvatale-server:~# docker exec -it nginx2 bash
+        root@c2fe5c2edb79:/# ifconfig
+        eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+                inet 172.17.0.2  netmask 255.255.0.0  broadcast 172.17.255.255
+                ether 02:42:ac:11:00:02  txqueuelen 0  (Ethernet)
+                RX packets 158  bytes 17430 (17.0 KiB)
+                RX errors 0  dropped 0  overruns 0  frame 0
+                TX packets 92  bytes 13895 (13.5 KiB)
+                TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+        lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+                inet 127.0.0.1  netmask 255.0.0.0
+                loop  txqueuelen 1000  (Local Loopback)
+                RX packets 0  bytes 0 (0.0 B)
+                RX errors 0  dropped 0  overruns 0  frame 0
+                TX packets 0  bytes 0 (0.0 B)
+                TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        
+        root@c2fe5c2edb79:/# route
+        Kernel IP routing table
+        Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+        default         172.17.0.1      0.0.0.0         UG    0      0        0 eth0
+        172.17.0.0      0.0.0.0         255.255.0.0     U     0      0        0 eth0
+        
+        root@c2fe5c2edb79:/# ping 172.17.0.3
+        PING 172.17.0.3 (172.17.0.3) 56(84) bytes of data.
+        64 bytes from 172.17.0.3: icmp_seq=1 ttl=64 time=0.334 ms
+        64 bytes from 172.17.0.3: icmp_seq=2 ttl=64 time=0.099 ms
+        64 bytes from 172.17.0.3: icmp_seq=3 ttl=64 time=0.076 ms
+        64 bytes from 172.17.0.3: icmp_seq=4 ttl=64 time=0.078 ms
+        ^C
+        --- 172.17.0.3 ping statistics ---
+        4 packets transmitted, 4 received, 0% packet loss, time 3066ms
+        rtt min/avg/max/mdev = 0.076/0.146/0.334/0.108 ms
+        
+        root@c2fe5c2edb79:/# arp
+        Address                  HWtype  HWaddress           Flags Mask            Iface
+        172.17.0.1               ether   02:42:05:b2:9b:2e   C                     eth0
+        172.17.0.3               ether   02:42:ac:11:00:03   C                     eth0
+        root@c2fe5c2edb79:/# netstat -tuapn
+        Active Internet connections (servers and established)
+        Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+        tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      41/sshd: /usr/sbin/
+        tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      1/nginx: master pro
+        tcp6       0      0 :::22                   :::*                    LISTEN      41/sshd: /usr/sbin/
+        tcp6       0      0 :::80                   :::*                    LISTEN      1/nginx: master pro
+        
+        root@c2fe5c2edb79:/# nmap 172.17.0.0/24
+        Starting Nmap 7.93 ( https://nmap.org ) at 2023-06-24 15:03 UTC
+        Nmap scan report for 172.17.0.1 (172.17.0.1)
+        Host is up (0.0000080s latency).
+        Not shown: 996 closed tcp ports (reset)
+        PORT     STATE SERVICE
+        22/tcp   open  ssh
+        80/tcp   open  http
+        81/tcp   open  hosts2-ns
+        8002/tcp open  teradataordbms
+        MAC Address: 02:42:05:B2:9B:2E (Unknown)
+
+        Nmap scan report for 172.17.0.3
+        Host is up (0.0000090s latency).
+        Not shown: 998 closed tcp ports (reset)
+        PORT   STATE SERVICE
+        22/tcp open  ssh
+        80/tcp open  http
+        MAC Address: 02:42:AC:11:00:03 (Unknown)
+
+        Nmap scan report for 172.17.0.4
+        Host is up (0.000014s latency).
+        Not shown: 998 closed tcp ports (reset)
+        PORT   STATE SERVICE
+        22/tcp open  ssh
+        80/tcp open  http
+        MAC Address: 02:42:AC:11:00:04 (Unknown)
+
+        Nmap scan report for c2fe5c2edb79 (172.17.0.2)
+        Host is up (0.0000030s latency).
+        Not shown: 998 closed tcp ports (reset)
+        PORT   STATE SERVICE
+        22/tcp open  ssh
+        80/tcp open  http
+
+        Nmap done: 256 IP addresses (4 hosts up) scanned in 2.22 seconds
+
+        
+CONFIGURAZIONE BRIDGE 2
+
+    I tre container sono collegati al bridge di default, creiamo un virtual bridge each
+    colleghiamo ad esso il container ngin3 e nginx4 e scolleghiamo il 4 dal bridge di
+    default.
+
+    Creazione del bridge :
+
+        root@salvatale-server:~# docker network create --driver macvlan --subnet=192.168.0.0/24 --gateway=192.168.0.1 bridge2
+        4652113ff56ab444fd877654b5e05e089347ef468e1cbe2c05e4b599cd45e085
+
+    Colleghiamo nginx3 e nginx4 al bridge 2:
+
+        root@salvatale-server:~# docker network connect bridge2 nginx3 --ip 192.168.0.3
+        root@salvatale-server:~# docker network connect bridge2 nginx4 --ip 192.168.0.4
+
+    Possiamo notare che abbiamo aggiunto una nuova interfaccia internet sia a nginx4
+    che nginx3:
+
+
+        NGINX3:
+            root@392e6c9825ba:/# ifconfig
+            eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+                    inet 172.17.0.3  netmask 255.255.0.0  broadcast 172.17.255.255
+                    ether 02:42:ac:11:00:03  txqueuelen 0  (Ethernet)
+                    RX packets 1583  bytes 87123 (85.0 KiB)
+                    RX errors 0  dropped 0  overruns 0  frame 0
+                    TX packets 1044  bytes 60338 (58.9 KiB)
+                    TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+            eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+                    inet 192.168.0.3  netmask 255.255.255.0  broadcast 192.168.0.255
+                    ether 02:42:c0:a8:00:03  txqueuelen 0  (Ethernet)
+                    RX packets 0  bytes 0 (0.0 B)
+                    RX errors 0  dropped 0  overruns 0  frame 0
+                    TX packets 0  bytes 0 (0.0 B)
+                    TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+            lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+                    inet 127.0.0.1  netmask 255.0.0.0
+                    loop  txqueuelen 1000  (Local Loopback)
+                    RX packets 12  bytes 990 (990.0 B)
+                    RX errors 0  dropped 0  overruns 0  frame 0
+                    TX packets 12  bytes 990 (990.0 B)
+                    TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+        NGINX4:
+
+            root@6b6fc14b99b4:/# ifconfig
+            eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+                    inet 172.17.0.4  netmask 255.255.0.0  broadcast 172.17.255.255
+                    ether 02:42:ac:11:00:04  txqueuelen 0  (Ethernet)
+                    RX packets 1588  bytes 87629 (85.5 KiB)
+                    RX errors 0  dropped 0  overruns 0  frame 0
+                    TX packets 1048  bytes 60660 (59.2 KiB)
+                    TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+            eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+                    inet 192.168.0.4  netmask 255.255.255.0  broadcast 192.168.0.255
+                    ether 02:42:c0:a8:00:04  txqueuelen 0  (Ethernet)
+                    RX packets 0  bytes 0 (0.0 B)
+                    RX errors 0  dropped 0  overruns 0  frame 0
+                    TX packets 0  bytes 0 (0.0 B)
+                    TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+            lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+                    inet 127.0.0.1  netmask 255.0.0.0
+                    loop  txqueuelen 1000  (Local Loopback)
+                    RX packets 0  bytes 0 (0.0 B)
+                    RX errors 0  dropped 0  overruns 0  frame 0
+                    TX packets 0  bytes 0 (0.0 B)
+                    TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+            Adesso eliminiamo l'interfaccia eth0 in modo da scollegarlo del bridge
+            di default:
+
+                root@6b6fc14b99b4:/# ifconfig
+                eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+                        inet 192.168.0.4  netmask 255.255.255.0  broadcast 192.168.0.255
+                        ether 02:42:c0:a8:00:04  txqueuelen 0  (Ethernet)
+                        RX packets 0  bytes 0 (0.0 B)
+                        RX errors 0  dropped 0  overruns 0  frame 0
+                        TX packets 0  bytes 0 (0.0 B)
+                        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+                lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+                        inet 127.0.0.1  netmask 255.0.0.0
+                        loop  txqueuelen 1000  (Local Loopback)
+                        RX packets 0  bytes 0 (0.0 B)
+                        RX errors 0  dropped 0  overruns 0  frame 0
+                        TX packets 0  bytes 0 (0.0 B)
+                        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+    Adesso dobbiamo sistemare le tabelle di routing:
+
+        -Aggiungiamo a nginx4 il router di default: 192.168.0.3
+
+            root@salvatale-server:~# docker exec nginx4 route add default gw 192.168.0.3
+
+            verifichiamo che abbia aggiunto il router di default
+
+            root@salvatale-server:~# docker exec -it nginx4 bash
+            root@6b6fc14b99b4:/# route
+            Kernel IP routing table
+            Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+            default         nginx3.bridge2  0.0.0.0         UG    0      0        0 eth1
+            192.168.0.0     0.0.0.0         255.255.255.0   U     0      0        0 eth1
+
+        - Aggiungiamo a nginx2 la rete 192.168.0.0/24, quando dovrà inviare dei pacchetti a questa
+          rete allora il gateway 172.17.0.3 si occuperà di fare il forwarding.
+
+            root@salvatale-server:~# docker exec nginx2 route add -net 192.168.0.0/24 gw 172.17.0.3
+
+            root@c2fe5c2edb79:/# route
+            Kernel IP routing table
+            Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+            default         172.17.0.1      0.0.0.0         UG    0      0        0 eth0
+            172.17.0.0      0.0.0.0         255.255.0.0     U     0      0        0 eth0
+            192.168.0.0     172.17.0.3      255.255.255.0   UG    0      0        0 eth0
+
+        - Facciamo le verifiche con il container nginx2 per il corretto funzionamento
+
+            - effettuiamo un ping verso nginx4:
+
+                root@c2fe5c2edb79:/# ping 192.168.0.4
+                PING 192.168.0.4 (192.168.0.4) 56(84) bytes of data.
+                64 bytes from 192.168.0.4: icmp_seq=1 ttl=63 time=0.248 ms
+                64 bytes from 192.168.0.4: icmp_seq=2 ttl=63 time=0.099 ms
+                64 bytes from 192.168.0.4: icmp_seq=3 ttl=63 time=0.092 ms
+                64 bytes from 192.168.0.4: icmp_seq=4 ttl=63 time=0.090 ms
+                ^C
+                --- 192.168.0.4 ping statistics ---
+                4 packets transmitted, 4 received, 0% packet loss, time 3038ms
+                rtt min/avg/max/mdev = 0.090/0.132/0.248/0.066 ms
+
+            - eseguiamo comando traceroute verso 192.168.0.4, possiamo notare che
+              viene prima consegnato a 172.17.0.3 che poi lo consegna a 192.168.0.4
+
+                root@c2fe5c2edb79:/# traceroute 192.168.0.4
+                traceroute to 192.168.0.4 (192.168.0.4), 30 hops max, 60 byte packets
+                1  172.17.0.3 (172.17.0.3)  0.092 ms  0.014 ms  0.012 ms
+                2  192.168.0.4 (192.168.0.4)  0.030 ms  0.016 ms  0.015 ms
+
+            - guardiamo tutti servizi attivi su nginx4:
+
+                root@c2fe5c2edb79:/# nmap 192.168.0.4
+                Starting Nmap 7.93 ( https://nmap.org ) at 2023-06-24 15:56 UTC
+                Nmap scan report for 192.168.0.4 (192.168.0.4)
+                Host is up (0.000038s latency).
+                Not shown: 998 closed tcp ports (reset)
+                PORT   STATE SERVICE
+                22/tcp open  ssh
+                80/tcp open  http
+
+                Nmap done: 1 IP address (1 host up) scanned in 0.17 seconds
+
+                root@c2fe5c2edb79:/# nmap -A 192.168.0.4 -p 22,80
+                Starting Nmap 7.93 ( https://nmap.org ) at 2023-06-24 15:57 UTC
+                Nmap scan report for 192.168.0.4 (192.168.0.4)
+                Host is up (0.00013s latency).
+
+                PORT   STATE SERVICE VERSION
+                22/tcp open  ssh     OpenSSH 9.2p1 Debian 2 (protocol 2.0)
+                | ssh-hostkey:
+                |   256 f309ff8bc07c8258a00dca824a4f2398 (ECDSA)
+                |_  256 e2fb262876be28449e47fd348e2a8a50 (ED25519)
+                80/tcp open  http    nginx 1.25.1
+                |_http-server-header: nginx/1.25.1
+                |_http-title: 403 Forbidden
+                Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+                Device type: general purpose
+                Running: Linux 4.X|5.X
+                OS CPE: cpe:/o:linux:linux_kernel:4 cpe:/o:linux:linux_kernel:5
+                OS details: Linux 4.15 - 5.6
+                Network Distance: 2 hops
+                Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+                TRACEROUTE (using port 22/tcp)
+                HOP RTT     ADDRESS
+                1   0.03 ms 172.17.0.3 (172.17.0.3)
+                2   0.15 ms 192.168.0.4 (192.168.0.4)
+
+                OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+                Nmap done: 1 IP address (1 host up) scanned in 8.38 seconds
+
+        Abbiamo verificato che nginx4 è raggiungibile da nginx2 dopo aver cambiato
+        l'architettura della rete.

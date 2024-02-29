@@ -1,0 +1,24 @@
+#SLURM_JOB_NODELIST: wn20
+####################################
+# HOME perf
+Write to file:
+2048+0 records in
+2048+0 records out
+2147483648 bytes (2.1 GB) copied, 6.26925 s, 343 MB/s
+
+Read from file:
+2048+0 records in
+2048+0 records out
+2147483648 bytes (2.1 GB) copied, 26.6424 s, 80.6 MB/s
+####################################
+# SCRATCH perf
+Write to file:
+2048+0 records in
+2048+0 records out
+2147483648 bytes (2.1 GB) copied, 6.3162 s, 340 MB/s
+
+Read from file:
+2048+0 records in
+2048+0 records out
+2147483648 bytes (2.1 GB) copied, 4.70641 s, 456 MB/s
+####################################

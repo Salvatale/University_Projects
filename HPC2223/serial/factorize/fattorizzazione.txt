@@ -1,0 +1,72 @@
+Il programma factorize0.c nella prima fase calcola il prodotto tra due numeri primi(modulo).
+Il modulo fa parte della chiave pubblica e privata dell'algoritmo crittografico RSA, quindi nella seconda
+parte cercheremo di fattorizzarlo a forza bruta, entriamo in un ciclo dove prendiamo diversi numeri primi x,
+se mod/x mi ritorna x allora abbiamo trovato il nostro numero primo.
+
+Eseguiamo qualche test variando il numero di bit:
+
+8 bits:
+
+#SLURM_JOB_NODELIST: wn20
+
+ p : 8C27
+ q : 8C27
+ m : 4CBAADF1
+
+ FOUND : 8C27
+
+real    0m0.332s
+user    0m0.158s
+sys     0m0.001s
+
+16 bits:
+
+#SLURM_JOB_NODELIST: wn20
+
+ p : E423
+ q : D9EB
+ m : C2331721
+
+ FOUND : D9EB
+
+real    0m0.485s
+user    0m0.237s
+sys     0m0.000s
+
+
+24 bits:
+
+
+
+Possiamo notare che con l'aumentare del numero di bit allora aumenta anche il tempo di esecuzione,
+Se impostiamo come numero di bit uguale a 32 bit allora non otterrò output dato che il programma
+impiegherebbe piu tempo di quanto specifico nel file factorize.slurm .
+
+-Ottimizzazione:
+
+	In nostro soccorso interviene factorize1.c che divide il nostro dominio in sottodomini,
+	adesso grazie a ciò possiamo assegnare i vari blocchi a processi o thread differenti che lavorando
+	autonomamente riducono il tempo complessivo di lavoro.
+
+	Potremmo utilizzare direttive openMP per assegnare i diversi blocchi a diversi thread,
+	gli overhead saranno molto piu contenuti perche:
+	
+		- Non avremo comunicazione tra i vari thread dato che ognuno lavora in modo autonomo
+		  sul suo blocco che sarà diverso rispetto ad un altro blocco.
+		
+		- Possiamo trascurare la sincronizzazione dato che ogni thread non deve aspettarne
+		  un altro per eseguire codice, ma esegue il suo task e poi termina.
+
+		- Potrebbe essere non trascurabile l'overhead aggiunto dal modello Join All su cui si
+		  basa openMP, quindi overhead aggiunto da thread un pò piu lenti che terminano la loro esecuzione.
+
+	Utilizzando quindi SPMD e il modello master slave allora non dovremmo preoccuparci 
+	del bilanciamento del carico dato che potremmo impostare un dynamic scheduling, quindi appena il thread avrà
+	finito il suo lavoro allora gli verrà assegnato un nuovo blocco riducendo i tempi di idle che potrebbero crearsi
+	con un static scheduling dato che il thread3 potrebbe finire prima del thread 2.
+
+	Un'altra soluzione che potremmo adottare è MPI, quindi assegniamo i diversi blocchi a diversi rank che
+	lavorano in parallelo e comunicano attraverso la rete, ovviamente aggiungeremo tempi di overhead dovuti alla rete,
+	ma nel nostro caso non avremo bisogno di sincronizzazioni o comunicazioni quindi possiamo trascurarlo.
+
+
